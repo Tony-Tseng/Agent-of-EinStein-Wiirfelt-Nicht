@@ -6,7 +6,7 @@
 #include <math.h>
 #include <time.h>
 #include <string>
-#include "node.hpp"
+// #include "node.hpp"
 
 using std::stoi;
 using std::string;
@@ -17,9 +17,7 @@ using std::string;
 #define PIECE_NUM 6
 #define COMMAND_NUM 7
 
-class Board  
-{
-	
+class Board{
 public:
 	bool red_exist[PIECE_NUM], blue_exist[PIECE_NUM];
 	int color;
@@ -30,8 +28,8 @@ public:
 	int red_piece_num, blue_piece_num;
 	int cube_position[2*PIECE_NUM];
 
-	Board(void);
-	~Board(void);
+	Board();
+	~Board();
 
 	Board &operator=(const Board& C);
 	
@@ -42,7 +40,11 @@ public:
 	// void Generate_move(char* move);
 	void Output_move(char* move, const int piece, const int start_point, const int end_point);
 	void Make_move(const int piece, const int start_point, const int end_point);
-	void Make_move(Move cube_move);
+	// void Make_move(Move cube_move);
 	int get_legal_move(int* result); 
+	int get_all_move(int *result);
 	int referee(int piece, int* src, int* dst);
+
+	void change_turn();
+	void cal_probability(float* p, int color);
 };

@@ -1,21 +1,21 @@
 #pragma once
-#include "board.hpp"\
+#include "board.hpp"
 
 // using PII = std::pair<int, int>;
 
 class Move{
     public:
-        int piece;
-        int start_point;
-        int end_point;
+    int piece;
+    int start_point;
+    int end_point;
 
-        Move(){}; // default constructor
-        Move(int _piece, int _start_point, int _end_point){
-            piece = _piece;
-            start_point = _start_point;
-            end_point = _end_point;
-        }
-        ~Move(){};
+    Move(){}; // default constructor
+    Move(int _piece, int _start_point, int _end_point){
+        piece = _piece;
+        start_point = _start_point;
+        end_point = _end_point;
+    }
+    ~Move(){};
     
 };
 

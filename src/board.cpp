@@ -349,39 +349,130 @@ void Board::Make_move(const int piece, const int start_point, const int end_poin
 			this->red_piece_num--;			
 		}
 	}
-	cube_position[piece-1] = this->board[end_row][end_col];
+	cube_position[piece-1] = end_point;
 	this->board[end_row][end_col] = piece;
+	change_turn();
 }
 
-void Board::Make_move(Move cube_move)
-{
-	int start_point = cube_move.start_point;
-	int end_point = cube_move.end_point;
-	int piece = cube_move.piece;
+void Board::change_turn(){
+	if(this->color == RED) this->color = BLUE;
+	else this->color = RED;
+}
 
-	int start_row = start_point / BOARD_SIZE;
-	int start_col = start_point % BOARD_SIZE;
-	int end_row = end_point / BOARD_SIZE;
-	int end_col = end_point % BOARD_SIZE;
+int Board::get_all_move(int *result){
+	int src, dst[3];
+	int move_count = 0;
+	int result_count = 0;
 
-	this->board[start_row][start_col] = 0;
-
-	// there has another piece on the target sqaure
-	if(this->board[end_row][end_col] > 0)
-	{
-		if(this->board[end_row][end_col] <= PIECE_NUM)
-		{
-			cube_position[this->board[end_row][end_col] - 1] = -1;
-			this->blue_exist[this->board[end_row][end_col] - 1] = 0;
-			this->blue_piece_num--;
-		}
-		else
-		{	
-			cube_position[this->board[end_row][end_col] - 7] = -1;
-			this->red_exist[this->board[end_row][end_col] - 7] = 0;
-			this->red_piece_num--;			
+	if(this->color == BLUE){
+		// the corresponding piece is alive
+		for(int i=0;i<6;i++){
+			if(this->blue_exist[i]){
+				move_count = this->referee(i+1, &src, dst);
+				for(int i = result_count; i < result_count + move_count; i++){
+					result[i * 3] = i+1;
+					result[i * 3 + 1] = src;
+					result[i * 3 + 2] = dst[i];
+				}
+				result_count += move_count;
+			}
 		}
 	}
-	cube_position[piece-1] = this->board[end_row][end_col];
-	this->board[end_row][end_col] = piece;
+	else if(this->color == RED){
+		// the corresponding piece is alive
+		for(int i=0;i<6;i++){
+			if(this->red_exist[i]){
+				move_count = this->referee(i+1+PIECE_NUM, &src, dst);
+				for(int i = result_count; i < result_count + move_count; i++){
+					result[i * 3] = i+1+PIECE_NUM;
+					result[i * 3 + 1] = src;
+					result[i * 3 + 2] = dst[i];
+				}
+				result_count += move_count;
+			}
+		}
+	}
+
+	return result_count;
+}
+
+void Board::cal_probability(float* p, int _color){
+	int base = 1;
+	int state = 0;
+	for(int i=5; i>-1 ; i--, base*=2){
+		if(_color == BLUE && blue_exist[i]) state += base;
+		else if(_color == RED && red_exist[i]) state += base;
+	}
+
+	float prob_list[64][6] = 
+	{
+		{0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 6},
+		{0, 0, 0, 0, 6, 0},
+		{0, 0, 0, 0, 5, 1},
+		{0, 0, 0, 6, 0, 0},
+		{0, 0, 0, 5, 0, 2},
+		{0, 0, 0, 4, 2, 0},
+		{0, 0, 0, 4, 1, 1},
+		{0, 0, 6, 0, 0, 0},
+		{0, 0, 5, 0, 0, 3},
+		{0, 0, 4, 0, 3, 0},
+		{0, 0, 4, 0, 2, 1},
+		{0, 0, 3, 3, 0, 0},
+		{0, 0, 3, 2, 0, 2},
+		{0, 0, 3, 1, 2, 0},
+		{0, 0, 3, 1, 1, 1},
+		{0, 6, 0, 0, 0, 0},
+		{0, 5, 0, 0, 0, 4},
+		{0, 4, 0, 0, 4, 0},
+		{0, 4, 0, 0, 3, 1},
+		{0, 3, 0, 4, 0, 0},
+		{0, 3, 0, 3, 0, 2},
+		{0, 3, 0, 2, 2, 0},
+		{0, 3, 0, 2, 1, 1},
+		{0, 2, 4, 0, 0, 0},
+		{0, 2, 3, 0, 0, 3},
+		{0, 2, 2, 0, 3, 0},
+		{0, 2, 2, 0, 2, 1},
+		{0, 2, 1, 3, 0, 0},
+		{0, 2, 1, 2, 0, 2},
+		{0, 2, 1, 1, 2, 0},
+		{0, 2, 1, 1, 1, 1},
+		{6, 0, 0, 0, 0, 0},
+		{5, 0, 0, 0, 0, 5},
+		{4, 0, 0, 0, 5, 0},
+		{4, 0, 0, 0, 4, 1},
+		{3, 0, 0, 5, 0, 0},
+		{3, 0, 0, 4, 0, 2},
+		{3, 0, 0, 3, 2, 0},
+		{3, 0, 0, 3, 1, 1},
+		{2, 0, 5, 0, 0, 0},
+		{2, 0, 4, 0, 0, 3},
+		{2, 0, 3, 0, 3, 0},
+		{2, 0, 3, 0, 2, 1},
+		{2, 0, 2, 3, 0, 0},
+		{2, 0, 2, 2, 0, 2},
+		{2, 0, 2, 1, 2, 0},
+		{2, 0, 2, 1, 1, 1},
+		{1, 5, 0, 0, 0, 0},
+		{1, 4, 0, 0, 0, 4},
+		{1, 3, 0, 0, 4, 0},
+		{1, 3, 0, 0, 3, 1},
+		{1, 2, 0, 4, 0, 0},
+		{1, 2, 0, 3, 0, 2},
+		{1, 2, 0, 2, 2, 0},
+		{1, 2, 0, 2, 1, 1},
+		{1, 1, 4, 0, 0, 0},
+		{1, 1, 3, 0, 0, 3},
+		{1, 1, 2, 0, 3, 0},
+		{1, 1, 2, 0, 2, 1},
+		{1, 1, 1, 3, 0, 0},
+		{1, 1, 1, 2, 0, 2},
+		{1, 1, 1, 1, 2, 0},
+		{1, 1, 1, 1, 1, 1}
+	};
+
+	for(int i=0;i<6;i++){
+		p[i] = prob_list[state][i];
+	}
 }

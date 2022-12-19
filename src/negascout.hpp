@@ -9,6 +9,7 @@
 class NegaScout  
 {
 public:
+	int search_depth = 5;
 	NegaScout(){
 		tree_node = new Node[MAXNODE];
 	};
@@ -20,6 +21,9 @@ public:
 	
 	void Generate_random_move(char* move);
 	void Generate_move(char* move);
+	
+	float Star0_search(Board* b, float alpha, float beta, int depth);
+	float Search(Board* b, float alpha, float beta, int depth);
 
 	float evaluate(Board* b, int color);
 
