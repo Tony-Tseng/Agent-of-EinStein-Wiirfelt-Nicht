@@ -26,14 +26,14 @@ void NegaScout::Generate_move(char* move){
 	float n = beta; // n
 
 	// Print chessboard
-	traverse->Print_chessboard();
+	// traverse->Print_chessboard();
 
 	for(int i=0;i<move_count;i++){
 		Move cube_move = Move(result[i*3], result[i*3+1], result[i*3+2]);
 		traverse->Make_move(result[i*3], result[i*3+1], result[i*3+2]);
 		
 		// Print chessboard
-		traverse->Print_chessboard();
+		// traverse->Print_chessboard();
 
 		int cur_index = head_index;
 		add_node(traverse, cube_move, 0, 1);
@@ -42,19 +42,21 @@ void NegaScout::Generate_move(char* move){
 		if(score>val){
 			if(n==beta || score>=beta){
 				val = score;
-				result_index = cur_index;
 			}
 			else val = Star0_search(traverse, -beta, -score, search_depth-1);
+			result_index = cur_index;
 		}
 		traverse = tree_node[0].state;
 
 		// Print chessboard
-		traverse->Print_chessboard();
+		// traverse->Print_chessboard();
 
 		if(val>=beta) break;
 		
 		n = std::max(alpha, val) + 1;
 	}
+
+	// Result index should iterate child to get
 
 	Move cube_move = tree_node[result_index].cube_move;
 	tree_node[result_index].state->Output_move(move, cube_move.piece, cube_move.start_point, cube_move.end_point);
@@ -69,15 +71,12 @@ float NegaScout::Star0_search(Board* b, float alpha, float beta, int depth){
 	float p[6];
 	b->cal_probability(p, b->color);
 	float p_sum = p[0] + p[1] + p[2] + p[3] + p[4] + p[5];
+	if(p_sum==0) return 0.0;
 
 	float v_sum = 0.0;
 	int turn = b->color;
 	for(int i=0;i<6;i++){
-		if(turn == RED && b->red_exist[i]){
-			b->dice = i+1;
-			v_sum += p[i] * Search(b, alpha, beta, depth);
-		}
-		else if(turn == BLUE && b->blue_exist[i]){
+		if( (turn == RED && b->red_exist[i]) || (turn == BLUE && b->blue_exist[i]) ){
 			b->dice = i+1;
 			v_sum += p[i] * Search(b, alpha, beta, depth);
 		}
@@ -107,9 +106,11 @@ float NegaScout::Search(Board* b, float alpha, float beta, int depth){
 		add_node(traverse, cube_move, 0, 1);
 
 		// Print chessboard
-		traverse->Print_chessboard();
+		// b->Print_chessboard();
 
 		float score = Star0_search(traverse, -n, -std::max(alpha, val), depth-1); // negascout
+
+		b->Print_chessboard();
 
 		if(score>val){
 			if(n==beta || score>=beta || depth<3){
@@ -120,7 +121,7 @@ float NegaScout::Search(Board* b, float alpha, float beta, int depth){
 		*traverse = *b;
 
 		// Print chessboard
-		traverse->Print_chessboard();
+		// traverse->Print_chessboard();
 
 		if(val>=beta) break;
 		
@@ -139,8 +140,8 @@ float NegaScout::evaluate(Board* b, int color){
 		// b->cal_probability(p, i);
 		for(int j=0;j<6;j++){
 			if(b->cube_position[i*6+j] == -1) continue;
-			int distance = b->cube_position[i*6+j] - target[i];
-			float manhattan = 8.0 - (abs(distance/5) + abs(distance%5));
+			int distance = abs(b->cube_position[i*6+j] - target[i]);
+			float manhattan = 8.0 - ( distance/5 + distance%5);
 			manhattan = i == color ? -manhattan : manhattan;
 			score += manhattan;
 		}

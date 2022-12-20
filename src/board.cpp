@@ -338,16 +338,15 @@ void Board::Make_move(const int piece, const int start_point, const int end_poin
 	{
 		if(this->board[end_row][end_col] <= PIECE_NUM)
 		{
-			cube_position[this->board[end_row][end_col] - 1] = -1;
 			this->blue_exist[this->board[end_row][end_col] - 1] = 0;
 			this->blue_piece_num--;
 		}
 		else
-		{	
-			cube_position[this->board[end_row][end_col] - 7] = -1;
+		{		
 			this->red_exist[this->board[end_row][end_col] - 7] = 0;
 			this->red_piece_num--;			
 		}
+		cube_position[this->board[end_row][end_col] -1] = -1;
 	}
 	cube_position[piece-1] = end_point;
 	this->board[end_row][end_col] = piece;
