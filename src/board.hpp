@@ -47,4 +47,6 @@ public:
 
 	void change_turn();
 	void cal_probability(float* p, int color);
+	bool is_game_over();
+	int get_winner();
 };

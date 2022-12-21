@@ -358,6 +358,19 @@ void Board::change_turn(){
 	else this->color = RED;
 }
 
+bool Board::is_game_over(){
+	if(get_winner() != -1) return true;
+	else return false;
+}
+
+int Board::get_winner(){
+	if(this->blue_piece_num == 0) return RED;
+	else if (this->red_piece_num == 0) return BLUE;
+	else if(this->board[0][0] < 7 && this->board[0][0] > 0) return BLUE;
+	else if(this->board[4][4] > 6) return RED;
+	else return -1;
+};
+
 int Board::get_all_move(int *result){
 	int src, dst[3];
 	int move_count = 0;
