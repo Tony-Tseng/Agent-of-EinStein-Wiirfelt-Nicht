@@ -85,7 +85,7 @@ float NegaScout::Star1_search(Board* b, float alpha, float beta, int depth){
 	float v_sum = 0.0;
 	float tmp = 0.0;
 	for(int i=0;i<6;i++){
-		if( turn == RED && b->red_exist[i]){
+		if( turn == RED ){
 			b->dice = i+1;
 			tmp = Search(b, std::max(v_min, A), std::min(v_max, B), depth);
 			m = m + (tmp-MINVALUE) / total;
@@ -98,7 +98,7 @@ float NegaScout::Star1_search(Board* b, float alpha, float beta, int depth){
 			A = A - tmp + MAXVALUE;
 			B = B - tmp + MINVALUE;
 		}
-		else if( turn == BLUE && b->blue_exist[i]){
+		else if( turn == BLUE ){
 			b->dice = i+1;
 			tmp = Search(b, std::max(v_min, A), std::min(v_max, B), depth);
 			m = m + (tmp-MINVALUE) / total;

@@ -11,7 +11,7 @@
 class NegaScout
 {
 public:
-	int search_depth = 5;
+	int search_depth = 3;
 	NegaScout(){
 		tree_node = new Node[MAXNODE];
 	};
