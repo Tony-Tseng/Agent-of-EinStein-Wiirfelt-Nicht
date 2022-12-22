@@ -70,25 +70,20 @@ void NegaScout::add_node(Board* b, Move cube_move, int p_id, int depth){
 }
 
 float NegaScout::Star0_search(Board* b, float alpha, float beta, int depth){
-	float p[6];
-	b->cal_probability(p, b->color);
-	float p_sum = p[0] + p[1] + p[2] + p[3] + p[4] + p[5];
-	if(p_sum==0) return 0.0;
-
 	float v_sum = 0.0;
 	int turn = b->color;
 	for(int i=0;i<6;i++){
 		if( turn == RED && b->red_exist[i] ){
 			b->dice = i+1;
-			v_sum += p[i] * Search(b, alpha, beta, depth);
+			v_sum += Search(b, alpha, beta, depth);
 		}
 		else if( turn == BLUE && b->blue_exist[i] ){
 			b->dice = i+1;
-			v_sum += p[i] * Search(b, alpha, beta, depth);
+			v_sum += Search(b, alpha, beta, depth);
 		}
 	}
 
-	return v_sum/ p_sum;
+	return v_sum/6;
 }
 
 float NegaScout::Star1_search(Board* b, float alpha, float beta, int depth){
