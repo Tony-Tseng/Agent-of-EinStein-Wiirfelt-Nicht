@@ -73,76 +73,17 @@ float NegaScout::Star0_search(Board* b, float alpha, float beta, int depth){
 	float v_sum = 0.0;
 	int turn = b->color;
 	for(int i=0;i<6;i++){
-		if( turn == RED && b->red_exist[i] ){
+		if( turn == RED ){
 			b->dice = i+1;
 			v_sum += Search(b, alpha, beta, depth);
 		}
-		else if( turn == BLUE && b->blue_exist[i] ){
+		else if( turn == BLUE ){
 			b->dice = i+1;
 			v_sum += Search(b, alpha, beta, depth);
 		}
 	}
 
 	return v_sum/6;
-}
-
-float NegaScout::Star1_search(Board* b, float alpha, float beta, int depth){
-	float p[6];
-	int turn = b->color;
-	b->cal_probability(p, turn);
-	float p_sum = p[0] + p[1] + p[2] + p[3] + p[4] + p[5];
-	if(p_sum==0) return 0.0;
-
-	// A_0 = ( (alpha - MAXVALUE) * p_sum + MAXVALUE * p[0] ) / p[0]
-	// B_0 = ( (beta  - MINVALUE) * p_sum + MINVALUE * p[0] ) / p[0]
-	float A, B;
-	float A_num_next, B_num_next;
-	float A_num = (alpha - MAXVALUE) * p_sum + MAXVALUE * p[0];
-	float B_num = (beta  - MINVALUE) * p_sum + MINVALUE * p[0];
-	float M = MAXVALUE;
-	float m = MINVALUE;
-
-	float v_sum = 0.0;
-	float tmp = 0.0;
-	for(int i=0;i<6;i++){
-		if(i==0){
-			A = A_num / p[0];
-			B = B_num / p[0];
-		}
-		else{
-			A = (p[i-1] * A_num_next - p[i] * A_num) / (p[i] * p[i-1]);
-			B = (p[i-1] * B_num_next - p[i] * B_num) / (p[i] * p[i-1]);
-			A_num = A_num_next;
-			B_num = B_num_next;
-		}
-
-		if( turn == RED && b->red_exist[i] ){
-			b->dice = i+1;
-			tmp = p[i] * Search(b, std::max(alpha, A), std::min(beta, B), depth);
-			m = m + p[i] / p_sum * (tmp-MINVALUE);
-			M = M + p[i] / p_sum * (tmp-MAXVALUE);
-
-			if(tmp >= B) return m;
-			if(tmp <= A) return M;
-			v_sum += tmp;
-			A_num_next = A_num + (MAXVALUE - tmp) * p[i];
-			B_num_next = B_num + (MINVALUE - tmp) * p[i];
-		}
-		else if( turn == BLUE && b->blue_exist[i] ){
-			b->dice = i+1;
-			tmp = p[i] * Search(b, std::max(alpha, A), std::min(beta, B), depth);
-			m = m + p[i] / p_sum * (tmp-MINVALUE);
-			M = M + p[i] / p_sum * (tmp-MAXVALUE);
-
-			if(tmp >= B) return m;
-			if(tmp <= A) return M;
-			v_sum += tmp;
-			A_num_next = A_num + (MAXVALUE - tmp) * p[i];
-			B_num_next = B_num + (MINVALUE - tmp) * p[i];
-		}
-	}
-
-	return v_sum/ p_sum;
 }
 
 float NegaScout::Search(Board* b, float alpha, float beta, int depth){
