@@ -4,8 +4,8 @@
 #include "node.hpp"
 
 #define MAXNODE 1000000
-#define MAXVALUE 32
-#define MINVALUE -32
+#define MAXVALUE 12
+#define MINVALUE -12
 
 
 class NegaScout

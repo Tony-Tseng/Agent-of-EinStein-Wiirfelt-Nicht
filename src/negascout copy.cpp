@@ -102,47 +102,45 @@ float NegaScout::Star1_search(Board* b, float alpha, float beta, int depth){
 
 	// A_0 = ( (alpha - MAXVALUE) * p_sum + MAXVALUE * p[0] ) / p[0]
 	// B_0 = ( (beta  - MINVALUE) * p_sum + MINVALUE * p[0] ) / p[0]
-	// float A, B;
-	float A = (alpha - MAXVALUE) * p_sum;//+ MAXVALUE * p[0];
-	float B = (beta  - MINVALUE) * p_sum;// + MINVALUE * p[0];
+	float A, B;
+	float A_num = (alpha - MAXVALUE) * p_sum + MAXVALUE * p[0];
+	float B_num = (beta  - MINVALUE) * p_sum + MINVALUE * p[0];
 	float M = MAXVALUE;
 	float m = MINVALUE;
 	float v_min = -12.0;
 	float v_max = 12.0;
-	float p_prev = 0.0;
+	float p_prev = 1.0;
 
 	float v_sum = 0.0;
 	float tmp = 0.0;
 	for(int i=0;i<6;i++){
 		if(p[i] == 0) continue;
-		// else if(i!=0){
-		A = A - tmp * p_prev + MAXVALUE * p[i];
-		B = B - tmp * p_prev + MINVALUE * p[i];
-		// A = A + (MAXVALUE - tmp) * p_prev;
-		// B = B + (MINVALUE - tmp) * p_prev;
-		// }
-		// A = A_num / p[i];
-		// B = B_num / p[i];
+		else if(i!=0){
+			A_num = (A - tmp) * p_prev + MAXVALUE * p[i];
+			B_num = (B - tmp) * p_prev + MINVALUE * p[i];
+		}
+		A = A_num / p[i];
+		B = B_num / p[i];
 		p_prev = p[i];
 
 		if( turn == RED && b->red_exist[i] ){
 			b->dice = i+1;
-			tmp = Search(b, std::max(v_min, A/p[i]), std::min(v_max, B/p[i]), depth);
+			tmp = Search(b, std::max(v_min, A), std::min(v_max, B), depth);
 			m = m + p[i] / p_sum * (tmp-MINVALUE);
 			M = M + p[i] / p_sum * (tmp-MAXVALUE);
 
-			if(tmp * p[i] >= B) return m;
-			if(tmp * p[i] <= A) return M;
+			if(tmp >= B) return m;
+			if(tmp <= A) return M;
 			v_sum += tmp * p[i];
 		}
 		else if( turn == BLUE && b->blue_exist[i] ){
 			b->dice = i+1;
-			tmp = Search(b, std::max(v_min, A/p[i]), std::min(v_max, B/p[i]), depth);
+			tmp = Search(b, std::max(v_min, A), std::min(v_max, B), depth);
 			m = m + p[i] / p_sum * (tmp-MINVALUE);
 			M = M + p[i] / p_sum * (tmp-MAXVALUE);
 
-			if(tmp * p[i] >= B) return m;
-			if(tmp * p[i] <= A) return M;
+			if(tmp >= B) return m;
+			if(tmp <= A) return M;
 			v_sum += tmp * p[i];
 		}
 	}
