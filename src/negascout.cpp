@@ -1,6 +1,6 @@
 #include "negascout.hpp"
 
-#define RANGE 30
+#define RANGE 100
 
 void NegaScout::Generate_random_move(char* move){
 	int result[100];
@@ -71,83 +71,49 @@ void NegaScout::add_node(Board* b, Move cube_move, int p_id, int depth){
 	head_index++;
 }
 
-float NegaScout::Star0_search(Board* b, float alpha, float beta, int depth){
-	float p[6];
-	b->cal_probability(p, b->color);
-	float p_sum = p[0] + p[1] + p[2] + p[3] + p[4] + p[5];
-	if(p_sum==0) return 0.0;
-
-	float v_sum = 0.0;
-	int turn = b->color;
-	for(int i=0;i<6;i++){
-		if( turn == RED && b->red_exist[i] ){
-			b->dice = i+1;
-			v_sum += p[i] * Search(b, alpha, beta, depth);
-		}
-		else if( turn == BLUE && b->blue_exist[i] ){
-			b->dice = i+1;
-			v_sum += p[i] * Search(b, alpha, beta, depth);
-		}
-	}
-
-	return v_sum/ p_sum;
-}
-
 float NegaScout::Star1_search(Board* b, float alpha, float beta, int depth){
-	float p[6];
 	int turn = b->color;
-	b->cal_probability(p, turn);
-	float p_sum = p[0] + p[1] + p[2] + p[3] + p[4] + p[5];
-	if(p_sum==0) return 0.0;
+	float total = 6.0;
 
-	// A_0 = ( (alpha - MAXVALUE) * p_sum + MAXVALUE * p[0] ) / p[0]
-	// B_0 = ( (beta  - MINVALUE) * p_sum + MINVALUE * p[0] ) / p[0]
-	// float A, B;
-	float A = (alpha - MAXVALUE) * p_sum;//+ MAXVALUE * p[0];
-	float B = (beta  - MINVALUE) * p_sum;// + MINVALUE * p[0];
+	float A = (alpha - MAXVALUE) * total + MAXVALUE;
+	float B = (beta  - MINVALUE) * total + MINVALUE;
 	float M = MAXVALUE;
 	float m = MINVALUE;
-	float v_min = -12.0;
-	float v_max = 12.0;
-	float p_prev = 0.0;
+	float v_min = -32.0;
+	float v_max = 32.0;
 
 	float v_sum = 0.0;
 	float tmp = 0.0;
 	for(int i=0;i<6;i++){
-		if(p[i] == 0) continue;
-		// else if(i!=0){
-		A = A - tmp * p_prev + MAXVALUE * p[i];
-		B = B - tmp * p_prev + MINVALUE * p[i];
-		// A = A + (MAXVALUE - tmp) * p_prev;
-		// B = B + (MINVALUE - tmp) * p_prev;
-		// }
-		// A = A_num / p[i];
-		// B = B_num / p[i];
-		p_prev = p[i];
-
-		if( turn == RED && b->red_exist[i] ){
+		if( turn == RED && b->red_exist[i]){
 			b->dice = i+1;
-			tmp = Search(b, std::max(v_min, A/p[i]), std::min(v_max, B/p[i]), depth);
-			m = m + p[i] / p_sum * (tmp-MINVALUE);
-			M = M + p[i] / p_sum * (tmp-MAXVALUE);
+			tmp = Search(b, std::max(v_min, A), std::min(v_max, B), depth);
+			m = m + (tmp-MINVALUE) / total;
+			M = M + (tmp-MAXVALUE) / total;
 
-			if(tmp * p[i] >= B) return m;
-			if(tmp * p[i] <= A) return M;
-			v_sum += tmp * p[i];
+			if(tmp >= B) return m;
+			if(tmp <= A) return M;
+			v_sum += tmp;
+
+			A = A - tmp + MAXVALUE;
+			B = B - tmp + MINVALUE;
 		}
-		else if( turn == BLUE && b->blue_exist[i] ){
+		else if( turn == BLUE && b->blue_exist[i]){
 			b->dice = i+1;
-			tmp = Search(b, std::max(v_min, A/p[i]), std::min(v_max, B/p[i]), depth);
-			m = m + p[i] / p_sum * (tmp-MINVALUE);
-			M = M + p[i] / p_sum * (tmp-MAXVALUE);
+			tmp = Search(b, std::max(v_min, A), std::min(v_max, B), depth);
+			m = m + (tmp-MINVALUE) / total;
+			M = M + (tmp-MAXVALUE) / total;
 
-			if(tmp * p[i] >= B) return m;
-			if(tmp * p[i] <= A) return M;
-			v_sum += tmp * p[i];
+			if(tmp >= B) return m;
+			if(tmp <= A) return M;
+			v_sum += tmp;
+
+			A = A - tmp + MAXVALUE;
+			B = B - tmp + MINVALUE;
 		}
 	}
 
-	return v_sum/ p_sum;
+	return v_sum/ total;
 }
 
 float NegaScout::Search(Board* b, float alpha, float beta, int depth){
@@ -215,8 +181,8 @@ float NegaScout::evaluate(Board* b, int color){
 		final_score += i == 0 ? score/p_sum : -score/p_sum;
 	}
 
-	if ( b->get_winner() == BLUE ) final_score += 4;
-	else if( b->get_winner() == RED ) final_score -= 4;
+	if ( b->get_winner() == BLUE ) final_score += 24;
+	else if( b->get_winner() == RED ) final_score -= 24;
 
 	if(color == BLUE) return -final_score;
 	else return final_score;
