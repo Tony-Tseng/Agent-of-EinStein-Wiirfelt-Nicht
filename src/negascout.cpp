@@ -73,8 +73,8 @@ float NegaScout::Star1_search(Board* b, float alpha, float beta, int depth){
 	int turn = b->color;
 	float total = 6.0;
 
-	// float A = (alpha - MAXVALUE) * total + MAXVALUE;
-	// float B = (beta  - MINVALUE) * total + MINVALUE;
+	float A = (alpha - MAXVALUE) * total + MAXVALUE;
+	float B = (beta  - MINVALUE) * total + MINVALUE;
 	float M = MAXVALUE;
 	float m = MINVALUE;
 
@@ -83,41 +83,36 @@ float NegaScout::Star1_search(Board* b, float alpha, float beta, int depth){
 	for(int i=0;i<6;i++){
 		if( turn == RED ){
 			b->dice = i+1;
-			tmp = Search(b, MINVALUE, MAXVALUE, depth);
+			tmp = -Search(b, std::max( (float) MINVALUE, A), std::min( (float) MAXVALUE, B), depth);
 			m = m + (tmp-MINVALUE) / total;
 			M = M + (tmp-MAXVALUE) / total;
 
-			// if(tmp >= B) return m;
-			// if(tmp <= A) return M;
-			if(m >= beta) 
-				return m;
-			if(M <= alpha) 
-				return M;
+			if(tmp >= B) return m;
+			if(tmp <= A) return M;
+			// if(m >= beta) return m;
+			// if(M <= alpha) return M;
 			v_sum += tmp;
 
-			// A = A - tmp + MAXVALUE;
-			// B = B - tmp + MINVALUE;
+			A = A - tmp + MAXVALUE;
+			B = B - tmp + MINVALUE;
 		}
 		else if( turn == BLUE ){
 			b->dice = i+1;
-			tmp = Search(b, MINVALUE, MAXVALUE, depth);
+			tmp = -Search(b, std::max( (float) MINVALUE, A), std::min( (float) MAXVALUE, B), depth);
 			m = m + (tmp-MINVALUE) / total;
 			M = M + (tmp-MAXVALUE) / total;
 
-			// if(tmp >= B) return m;
-			// if(tmp <= A) return M;
-			if(m >= beta) 
-				return m;
-			if(M <= alpha) 
-				return M;
+			if(tmp >= B) return m;
+			if(tmp <= A) return M;
+			// if(m >= beta) return m;
+			// if(M <= alpha) return M;
 			v_sum += tmp;
-
-			// A = A - tmp + MAXVALUE;
-			// B = B - tmp + MINVALUE;
+			A = A - tmp + MAXVALUE;
+			B = B - tmp + MINVALUE;
 		}
 	}
 
-	return v_sum/ total;
+	return -v_sum/ total;
 }
 
 float NegaScout::Search(Board* b, float alpha, float beta, int depth){
@@ -167,16 +162,17 @@ float NegaScout::Search(Board* b, float alpha, float beta, int depth){
 
 float NegaScout::evaluate(Board* b, int color){
 	// b->Print_chessboard();
-
+	// float p[6];
 	int target[2] = {0, 24};
 	float score = 0.0;
 	float final_score = 0.0;
 	for(int i=0;i<2;i++){
+		// b->cal_probability(p, 1-i);
 		score = 0.0;
 		for(int j=0;j<6;j++){
 			if(b->cube_position[i*6+j] == -1) continue;
 			int distance = abs(b->cube_position[i*6+j] - target[i]);
-			score = std::max( score, (float) (8.0 - (distance/5 + distance%5) ) );
+			score = std::max( score, (float) (8 - (distance/5 + distance%5)) );
 		}
 		final_score += i == 0 ? score: -score;
 	}
