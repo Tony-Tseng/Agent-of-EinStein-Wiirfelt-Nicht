@@ -75,11 +75,11 @@ float NegaScout::Star0_search(Board* b, float alpha, float beta, int depth){
 	for(int i=0;i<6;i++){
 		if( turn == RED ){
 			b->dice = i+1;
-			v_sum += Search(b, alpha, beta, depth);
+			v_sum += Search(b, -100, 100, depth);
 		}
 		else if( turn == BLUE ){
 			b->dice = i+1;
-			v_sum += Search(b, alpha, beta, depth);
+			v_sum += Search(b, -100, 100, depth);
 		}
 	}
 
