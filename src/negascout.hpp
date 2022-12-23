@@ -25,6 +25,11 @@ public:
 	void Generate_move(char* move);
 	
 	float Star0_search(Board* b, float alpha, float beta, int depth);
+	float Star0_F(Board* b, float alpha, float beta, int depth);
+	float Star0_G(Board* b, float alpha, float beta, int depth);
+	float Search_F(Board* b, float alpha, float beta, int depth);
+	float Search_G(Board* b, float alpha, float beta, int depth);
+	
 	float Star1_search(Board* b, float alpha, float beta, int depth);
 	float Search(Board* b, float alpha, float beta, int depth);
 
