@@ -83,27 +83,26 @@ float NegaScout::Star1_search(Board* b, float alpha, float beta, int depth){
 	for(int i=0;i<6;i++){
 		if( turn == RED ){
 			b->dice = i+1;
-			tmp = -Search(b, std::max( (float) MINVALUE, A), std::min( (float) MAXVALUE, B), depth);
+			tmp = Search(b, std::max( (float) MINVALUE, A), std::min( (float) MAXVALUE, B), depth);
 			m = m + (tmp-MINVALUE) / total;
 			M = M + (tmp-MAXVALUE) / total;
 
-			if(tmp >= B) return m;
-			if(tmp <= A) return M;
+			// if(tmp >= B) return m;
+			// if(tmp <= A) return M;
 			// if(m >= beta) return m;
 			// if(M <= alpha) return M;
 			v_sum += tmp;
-
 			A = A - tmp + MAXVALUE;
 			B = B - tmp + MINVALUE;
 		}
 		else if( turn == BLUE ){
 			b->dice = i+1;
-			tmp = -Search(b, std::max( (float) MINVALUE, A), std::min( (float) MAXVALUE, B), depth);
+			tmp = Search(b, std::max( (float) MINVALUE, A), std::min( (float) MAXVALUE, B), depth);
 			m = m + (tmp-MINVALUE) / total;
 			M = M + (tmp-MAXVALUE) / total;
 
-			if(tmp >= B) return m;
-			if(tmp <= A) return M;
+			// if(tmp >= B) return m;
+			// if(tmp <= A) return M;
 			// if(m >= beta) return m;
 			// if(M <= alpha) return M;
 			v_sum += tmp;
@@ -112,7 +111,7 @@ float NegaScout::Star1_search(Board* b, float alpha, float beta, int depth){
 		}
 	}
 
-	return -v_sum/ total;
+	return v_sum/ total;
 }
 
 float NegaScout::Search(Board* b, float alpha, float beta, int depth){
