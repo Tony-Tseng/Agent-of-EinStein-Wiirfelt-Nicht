@@ -89,10 +89,10 @@ float NegaScout::Star1_search(Board* b, float alpha, float beta, int depth){
 
 			// if(tmp >= B) return m;
 			// if(tmp <= A) return M;
-			if(m >= beta) 
-				return m;
-			if(M <= alpha) 
-				return M;
+			// if(m >= beta) 
+			// 	return m;
+			// if(M <= alpha) 
+			// 	return M;
 			v_sum += tmp;
 
 			// A = A - tmp + MAXVALUE;
@@ -106,10 +106,10 @@ float NegaScout::Star1_search(Board* b, float alpha, float beta, int depth){
 
 			// if(tmp >= B) return m;
 			// if(tmp <= A) return M;
-			if(m >= beta) 
-				return m;
-			if(M <= alpha) 
-				return M;
+			// if(m >= beta) 
+			// 	return m;
+			// if(M <= alpha) 
+			// 	return M;
 			v_sum += tmp;
 
 			// A = A - tmp + MAXVALUE;
