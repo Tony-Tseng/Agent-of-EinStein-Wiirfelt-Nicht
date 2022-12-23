@@ -4,14 +4,14 @@
 #include "node.hpp"
 
 #define MAXNODE 1000000
-#define MAXVALUE 12
-#define MINVALUE -12
+#define MAXVALUE 8
+#define MINVALUE -8
 
 
 class NegaScout
 {
 public:
-	int search_depth = 3;
+	int search_depth = 5;
 	NegaScout(){
 		tree_node = new Node[MAXNODE];
 	};
