@@ -148,8 +148,8 @@ float NegaScout::evaluate(Board* b, int color){
 			int distance = abs(b->cube_position[i*6+j] - target[i]);
 			score = std::max( score, (float) (8.0 - (distance/5 + distance%5) ) );
 		}
-		final_score += i == 0 ? score: -score;
+		final_score += i == 0 ? -score: score;
 	}
-	if( color == BLUE ) return -final_score;
-	else return final_score;
+	// if( color == BLUE ) return -final_score;
+	return final_score;
 }
