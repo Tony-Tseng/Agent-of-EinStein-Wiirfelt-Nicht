@@ -10,6 +10,7 @@ Board &Board::operator=(const Board& B){
 		red_exist[i] = B.red_exist[i];
 		blue_exist[i] = B.blue_exist[i];
 	}
+	hash_value = B.hash_value;
 	color = B.color;
 	red_time = B.red_time;
 	blue_time = B.blue_time;
@@ -490,9 +491,4 @@ void Board::cal_probability(float* p, int _color){
 	for(int i=0;i<6;i++){
 		p[i] = prob_list[state][i];
 	}
-}
-
-
-void Board::Set_hash_value(int hash_value){
-	this->hash_value = hash_value;
 }

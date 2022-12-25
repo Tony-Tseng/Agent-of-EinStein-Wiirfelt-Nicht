@@ -10,9 +10,11 @@
 class NegaScout
 {
 public:
-	int search_depth = 5;
+	int search_depth = 6;
 	NegaScout(Board *b){
 		*root = *b;
+		int hash_value = transposition_table->Calculate_hash(root);
+		root->hash_value = hash_value;
 	};
 	~NegaScout(){
 	};

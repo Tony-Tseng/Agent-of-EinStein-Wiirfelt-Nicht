@@ -28,6 +28,7 @@ class Table{
     void Generate_hash_table();
     void Set_entry(Board* b, int _depth, float value, int value_type, int* move_list, int move_index);
     int Calculate_hash(Board* b);
+    int Calculate_hash_by_move(Board* b, int hash_value, int piece, int start_pos, int end_pos);
     int Get_board_index(Board* b);
     bool Check_same_state(Board* b, int index);
 };

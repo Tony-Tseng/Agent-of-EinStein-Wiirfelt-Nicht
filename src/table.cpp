@@ -5,6 +5,18 @@ void Table::Set_entry(Board* b, int _depth, float value, int value_type, int* mo
     table[index].set_table(b, _depth, value, value_type, move_list, move_index);
 }
 
+int Table::Calculate_hash_by_move(Board* b, int hash_value, int piece, int start_pos, int end_pos){
+    if(b->board[end_pos/5][end_pos%5] != 0){
+        hash_value ^= hash_table[b->board[end_pos/5][end_pos%5]-1][end_pos];
+    }
+    hash_value ^= hash_table[piece-1][start_pos];
+    hash_value ^= hash_table[piece-1][end_pos];
+    hash_value ^= hash_color[0];
+    hash_value ^= hash_color[1];
+
+    return hash_value;
+}
+
 int Table::Calculate_hash(Board* b){
     int hash = hash_color[b->color];
     for(int i=0;i<2*PIECE_NUM;i++){
