@@ -6,7 +6,6 @@
 #include <math.h>
 #include <time.h>
 #include <string>
-// #include "node.hpp"
 
 using std::stoi;
 using std::string;
@@ -27,6 +26,7 @@ public:
 	int board[BOARD_SIZE][BOARD_SIZE];
 	int red_piece_num, blue_piece_num;
 	int cube_position[2*PIECE_NUM];
+	int hash_value;
 
 	Board();
 	~Board();
@@ -40,7 +40,7 @@ public:
 	// void Generate_move(char* move);
 	void Output_move(char* move, const int piece, const int start_point, const int end_point);
 	void Make_move(const int piece, const int start_point, const int end_point);
-	// void Make_move(Move cube_move);
+	
 	int get_legal_move(int* result); 
 	int get_all_move(int *result);
 	int referee(int piece, int* src, int* dst);

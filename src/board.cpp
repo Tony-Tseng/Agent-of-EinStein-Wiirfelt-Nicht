@@ -10,6 +10,7 @@ Board &Board::operator=(const Board& B){
 		red_exist[i] = B.red_exist[i];
 		blue_exist[i] = B.blue_exist[i];
 	}
+	hash_value = B.hash_value;
 	color = B.color;
 	red_time = B.red_time;
 	blue_time = B.blue_time;
@@ -92,8 +93,11 @@ void Board::Set_board(char* position)
 			i += 1;
 		}
 		// 1~6: blue pieces; 7~12: red pieces
+		// if (i < PIECE_NUM * 2)
+		// {
 		this->board[position[index + 1] - '1'][position[index] - 'A'] = i + 1;
 		this->cube_position[i] = (position[index + 1] - '1') * BOARD_SIZE + (position[index] - 'A');
+		// }
 	}
 	fprintf(stderr, "\nThe current board:\n");
 	this->Print_chessboard();
