@@ -1,5 +1,6 @@
 #pragma once
 
+#include <time.h>
 #include "board.hpp"
 #include "table.hpp"
 
@@ -10,7 +11,10 @@
 class NegaScout
 {
 public:
-	int search_depth = 6;
+	struct timespec tick, tock;
+	double time_limit = 5.0;
+	int depth_limit = 5;
+	float threshold = 2.0;
 	NegaScout(Board *b){
 		*root = *b;
 		int hash_value = transposition_table->Calculate_hash(root);
@@ -18,9 +22,12 @@ public:
 	};
 	~NegaScout(){
 	};
+	double timer(bool reset);
 
 	void Generate_random_move(char* move);
 	void Generate_move(char* move);
+
+	std::pair<int, float> First_F(float alpha, float beta, int depth);
 	
 	float Star1_F(Board* b, float alpha, float beta, int depth);
 	float Star1_G(Board* b, float alpha, float beta, int depth);

@@ -1,5 +1,14 @@
 #include "negascout.hpp"
 
+double NegaScout::timer(bool reset){
+	if ( reset ) {
+		clock_gettime(CLOCK_REALTIME, &tick);
+		return 0.0;
+	}
+	clock_gettime(CLOCK_REALTIME, &tock);
+	return (double) ((tock.tv_sec + tock.tv_nsec*1e-9)-(double) (tick.tv_sec + tick.tv_nsec*1e-9));
+}
+
 void NegaScout::Generate_random_move(char* move){
 	int result[100];
 	// get legal moves
@@ -14,24 +23,53 @@ void NegaScout::Generate_random_move(char* move){
 }
 
 void NegaScout::Generate_move(char* move){
+	float alpha = -100;
+	float beta = 100;
+	std::pair<int ,float> IDAS_result = First_F(alpha, beta, 3);
+	std::pair<int ,float> IDAS_tmp;
+	int current_depth = 4;
+	
+	while( timer(false) < time_limit && current_depth <= depth_limit){
+		IDAS_tmp = First_F(IDAS_result.second-threshold, IDAS_result.second+threshold, current_depth);
+		if(IDAS_tmp.second <= IDAS_result.second-threshold){
+			IDAS_tmp = First_F(alpha, IDAS_tmp.second, current_depth);
+		}
+		else if(IDAS_tmp.second >= IDAS_result.second+threshold){
+			IDAS_tmp = First_F(IDAS_tmp.second, beta, current_depth);
+		}
+
+		// if(IDAS_tmp.second > IDAS_result.second){
+		IDAS_result = IDAS_tmp;
+		// }
+		// Need to determine whether the time is enough
+
+		current_depth+=2;
+	}
+	
+	// Result index should iterate child to get the best move
+	int result_index = IDAS_result.first;
+	int result[100];
+	root->get_legal_move(result);
+	root->Output_move(move, result[result_index*3], result[result_index*3+1], result[result_index*3+2]);
+}
+
+std::pair<int, float> NegaScout::First_F(float alpha, float beta, int depth){
 	int result_index = 0;
 
 	// NegaScout Algorithm
 	Board* traverse = new Board();
 	*traverse = *root;
+	float val = -100; // m
+
 	int next_hash = 0;
 	int result[100];
 	int move_count = root->get_legal_move(result);
-	float alpha = -100;
-	float beta = 100;
-	float val = -100; // m
-
 	for(int i=0;i<move_count;i++){
 		next_hash = transposition_table->Calculate_hash_by_move(traverse, traverse->hash_value, result[i*3], result[i*3+1], result[i*3+2]);
 		traverse->Make_move(result[i*3], result[i*3+1], result[i*3+2]);
 		traverse->hash_value = next_hash;
 
-		float score = Star1_F(traverse, std::max(alpha, val), beta, search_depth-1); // negascout
+		float score = Star1_F(traverse, std::max(alpha, val), beta, depth-1); // negascout
 
 		if(score>val){
 			val = score;
@@ -41,8 +79,8 @@ void NegaScout::Generate_move(char* move){
 
 		if(val>=beta) break;
 	}
-	// Result index should iterate child to get the best move
-	root->Output_move(move, result[result_index*3], result[result_index*3+1], result[result_index*3+2]);
+
+	return std::make_pair(result_index, val);
 }
 
 float NegaScout::Star1_F(Board* b, float alpha, float beta, int depth){
@@ -124,7 +162,7 @@ float NegaScout::Search_F(Board* b, float alpha, float beta, int depth){
 
 	int result[100];
 	int move_count = traverse->get_legal_move(result);
-	if(depth==0 || move_count == 0 || b->is_game_over() ){ // time limit
+	if(depth==0 || move_count == 0 || b->is_game_over() || timer(false) >= time_limit){
 		return evaluate(b, b->color);
 	}
 
@@ -169,7 +207,6 @@ float NegaScout::Search_F(Board* b, float alpha, float beta, int depth){
 	return val;
 }
 
-
 float NegaScout::Search_G(Board* b, float alpha, float beta, int depth){
 	Board* traverse = new Board();
 	*traverse = *b;
@@ -197,7 +234,7 @@ float NegaScout::Search_G(Board* b, float alpha, float beta, int depth){
 
 	int result[100];
 	int move_count = traverse->get_legal_move(result);
-	if(depth==0 || move_count == 0 || b->is_game_over() ){ // time limit
+	if(depth==0 || move_count == 0 || b->is_game_over() || timer(false) >= time_limit){ // time limit
 		return evaluate(b, b->color);
 	}
 
@@ -252,10 +289,32 @@ float NegaScout::evaluate(Board* b, int color){
 			int distance = abs(b->cube_position[i*6+j] - target[i]);
 			score = std::max( score, (float) (8.0 - (distance/5 + distance%5) ) );
 		}
-		final_score += i == 0 ? -score: score;
+		final_score += i == root->color ? -score: score;
 	}
 	return final_score;
 }
+
+// void NegaScout::Generate_move(char* move){
+// 	int result_index = 0;
+
+// 	// NegaScout Algorithm
+// 	Board* traverse = new Board();
+// 	*traverse = *root;
+
+// 	int next_hash = 0;
+// 	int result[100];
+// 	int move_count = root->get_legal_move(result);
+// 	for(int i=0;i<move_count;i++){
+// 		next_hash = transposition_table->Calculate_hash_by_move(traverse, traverse->hash_value, result[i*3], result[i*3+1], result[i*3+2]);
+// 		traverse->Make_move(result[i*3], result[i*3+1], result[i*3+2]);
+// 		traverse->hash_value = next_hash;
+
+		
+// 	}
+
+// 	// Result index should iterate child to get the best move
+// 	root->Output_move(move, result[result_index*3], result[result_index*3+1], result[result_index*3+2]);
+// }
 
 // float NegaScout::Search_F(Board* b, float alpha, float beta, int depth){
 // 	Board* traverse = new Board();
