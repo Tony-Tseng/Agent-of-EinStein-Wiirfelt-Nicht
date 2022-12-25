@@ -47,8 +47,6 @@ void NegaScout::Generate_move(char* move){
 	tree_node[0].state->Output_move(move, result[result_index*3], result[result_index*3+1], result[result_index*3+2]);
 }
 
-
-
 void NegaScout::add_node(Board* b, Move cube_move, int p_id, int depth){
 	tree_node[head_index].set_node(b, cube_move, p_id, depth);
 	head_index++;
@@ -188,8 +186,6 @@ float NegaScout::Search_G(Board* b, float alpha, float beta, int depth){
 }
 
 float NegaScout::evaluate(Board* b, int color){
-	// b->Print_chessboard();
-
 	int target[2] = {0, 24};
 	float score = 0.0;
 	float final_score = 0.0;
@@ -200,10 +196,9 @@ float NegaScout::evaluate(Board* b, int color){
 			int distance = abs(b->cube_position[i*6+j] - target[i]);
 			score = std::max( score, (float) (8.0 - (distance/5 + distance%5) ) );
 		}
-		final_score += i == 0 ? score: -score;
+		final_score += i == 0 ? -score: score;
 	}
-	if( color == BLUE ) return -final_score;
-	else return final_score;
+	return final_score;
 }
 
 
