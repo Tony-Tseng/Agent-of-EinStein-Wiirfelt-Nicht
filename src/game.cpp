@@ -69,9 +69,7 @@ void Game::Get(const char* data[], char* response)
 
 	// generate move
 	char move[4];
-	NegaScout* AI = new NegaScout();
-	Move cube_move(-1, -1, -1);
-	AI->add_node(state, cube_move, -1, 0);
+	NegaScout* AI = new NegaScout(state);
 	// AI->Generate_random_move(move);
 	AI->Generate_move(move);
 	sprintf(response, "%c%c %c%c", move[0], move[1], move[2], move[3]);
