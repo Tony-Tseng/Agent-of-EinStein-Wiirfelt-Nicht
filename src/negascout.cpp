@@ -28,7 +28,7 @@ void NegaScout::Generate_move(char* move){
 	for(int i=0;i<move_count;i++){
 		traverse->Make_move(result[i*3], result[i*3+1], result[i*3+2]);
 
-		float score = Star0_F(traverse, std::max(alpha, val), beta, search_depth-1); // negascout
+		float score = Star1_F(traverse, std::max(alpha, val), beta, search_depth-1); // negascout
 
 		if(score>val){
 			val = score;
@@ -42,7 +42,7 @@ void NegaScout::Generate_move(char* move){
 	root->Output_move(move, result[result_index*3], result[result_index*3+1], result[result_index*3+2]);
 }
 
-float NegaScout::Star0_F(Board* b, float alpha, float beta, int depth){
+float NegaScout::Star1_F(Board* b, float alpha, float beta, int depth){
 	float A = (alpha - MAXVALUE) * 6.0 + MAXVALUE;
 	float B = (beta  - MINVALUE) * 6.0 + MINVALUE;
 	float M = MAXVALUE;
@@ -68,7 +68,7 @@ float NegaScout::Star0_F(Board* b, float alpha, float beta, int depth){
 	return v_sum/6;
 }
 
-float NegaScout::Star0_G(Board* b, float alpha, float beta, int depth){
+float NegaScout::Star1_G(Board* b, float alpha, float beta, int depth){
 	float A = (alpha - MAXVALUE) * 6.0 + MAXVALUE;
 	float B = (beta  - MINVALUE) * 6.0 + MINVALUE;
 	float M = MAXVALUE;
@@ -129,20 +129,20 @@ float NegaScout::Search_F(Board* b, float alpha, float beta, int depth){
 	int i=0;
 	traverse->Make_move(result[i*3], result[i*3+1], result[i*3+2]);
 
-	val = std::max(val, Star0_F(traverse, alpha, beta, depth-1));
+	val = std::max(val, Star1_F(traverse, alpha, beta, depth-1));
 	*traverse = *b;
 	if(val>=beta) return val;
 
 	for(i=1;i<move_count;i++){
 		traverse->Make_move(result[i*3], result[i*3+1], result[i*3+2]);
 
-		float score = Star0_F(traverse, val, val+1, depth-1); // negascout
+		float score = Star1_F(traverse, val, val+1, depth-1); // negascout
 
 		if(score>val){
 			if( score>=beta || depth<3){
 				val = score;
 			}
-			else val = Star0_F(traverse, score, beta, depth-1);
+			else val = Star1_F(traverse, score, beta, depth-1);
 			best_index = i;
 		}
 		if(val>=beta){
@@ -194,20 +194,20 @@ float NegaScout::Search_G(Board* b, float alpha, float beta, int depth){
 	int i=0;
 	traverse->Make_move(result[i*3], result[i*3+1], result[i*3+2]);
 
-	val = std::min(val, Star0_G(traverse, alpha, beta, depth-1));
+	val = std::min(val, Star1_G(traverse, alpha, beta, depth-1));
 	*traverse = *b;
 	if(val<=alpha) return val;
 
 	for(i=1;i<move_count;i++){
 		traverse->Make_move(result[i*3], result[i*3+1], result[i*3+2]);
 
-		float score = Star0_G(traverse, val-1, val, depth-1); // negascout
+		float score = Star1_G(traverse, val-1, val, depth-1); // negascout
 
 		if(score<val){
 			if( score<=alpha || depth<3){
 				val = score;
 			}
-			else val = Star0_G(traverse, alpha, score, depth-1);
+			else val = Star1_G(traverse, alpha, score, depth-1);
 			best_index = i;
 		}
 		if(val<=alpha){
@@ -233,10 +233,9 @@ float NegaScout::evaluate(Board* b, int color){
 			int distance = abs(b->cube_position[i*6+j] - target[i]);
 			score = std::max( score, (float) (8.0 - (distance/5 + distance%5) ) );
 		}
-		final_score += i == 0 ? score: -score;
+		final_score += i == 0 ? -score: score;
 	}
-	if( color == BLUE ) return -final_score;
-	else return final_score;
+	return final_score;
 }
 
 // float NegaScout::Search_F(Board* b, float alpha, float beta, int depth){
@@ -253,20 +252,20 @@ float NegaScout::evaluate(Board* b, int color){
 // 	int i=0;
 // 	traverse->Make_move(result[i*3], result[i*3+1], result[i*3+2]);
 
-// 	val = std::max(val, Star0_F(traverse, alpha, beta, depth-1));
+// 	val = std::max(val, Star1_F(traverse, alpha, beta, depth-1));
 // 	*traverse = *b;
 // 	if(val>=beta) return val;
 
 // 	for(i=1;i<move_count;i++){
 // 		traverse->Make_move(result[i*3], result[i*3+1], result[i*3+2]);
 
-// 		float score = Star0_F(traverse, val, val+1, depth-1); // negascout
+// 		float score = Star1_F(traverse, val, val+1, depth-1); // negascout
 
 // 		if(score>val){
 // 			if( score>=beta || depth<3){
 // 				val = score;
 // 			}
-// 			else val = Star0_F(traverse, score, beta, depth-1);
+// 			else val = Star1_F(traverse, score, beta, depth-1);
 // 		}
 // 		*traverse = *b;
 
@@ -290,20 +289,20 @@ float NegaScout::evaluate(Board* b, int color){
 // 	int i=0;
 // 	traverse->Make_move(result[i*3], result[i*3+1], result[i*3+2]);
 
-// 	val = std::min(val, Star0_G(traverse, alpha, beta, depth-1));
+// 	val = std::min(val, Star1_G(traverse, alpha, beta, depth-1));
 // 	*traverse = *b;
 // 	if(val<=alpha) return val;
 
 // 	for(i=1;i<move_count;i++){
 // 		traverse->Make_move(result[i*3], result[i*3+1], result[i*3+2]);
 
-// 		float score = Star0_G(traverse, val-1, val, depth-1); // negascout
+// 		float score = Star1_G(traverse, val-1, val, depth-1); // negascout
 
 // 		if(score<val){
 // 			if( score<=alpha || depth<3){
 // 				val = score;
 // 			}
-// 			else val = Star0_G(traverse, alpha, score, depth-1);
+// 			else val = Star1_G(traverse, alpha, score, depth-1);
 // 		}
 // 		*traverse = *b;
 
@@ -327,7 +326,7 @@ float NegaScout::evaluate(Board* b, int color){
 // 	for(int i=0;i<move_count;i++){
 // 		traverse->Make_move(result[i*3], result[i*3+1], result[i*3+2]);
 
-// 		float score = Star0_F(traverse, std::max(alpha, val), beta, depth-1); // negascout
+// 		float score = Star1_F(traverse, std::max(alpha, val), beta, depth-1); // negascout
 // 		// b->Print_chessboard();
 
 // 		if(score>val){
@@ -356,7 +355,7 @@ float NegaScout::evaluate(Board* b, int color){
 // 	for(int i=0;i<move_count;i++){
 // 		traverse->Make_move(result[i*3], result[i*3+1], result[i*3+2]);
 
-// 		float score = Star0_G(traverse, alpha, std::min(beta, val), depth-1); // negascout
+// 		float score = Star1_G(traverse, alpha, std::min(beta, val), depth-1); // negascout
 // 		// b->Print_chessboard();
 
 // 		if(score<val){

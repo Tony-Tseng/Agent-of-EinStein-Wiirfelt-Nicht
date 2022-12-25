@@ -27,6 +27,8 @@ public:
 	int red_piece_num, blue_piece_num;
 	int cube_position[2*PIECE_NUM];
 
+	int hash_value;
+
 	Board();
 	~Board();
 
@@ -35,6 +37,7 @@ public:
 	// Board Related
 	void Init_board_state(char* position);
 	void Set_board(char* position);
+	void Set_hash_value(int hash_value);
 	void Print_chessboard();
 	// void Generate_move(char* move);
 	void Output_move(char* move, const int piece, const int start_point, const int end_point);
