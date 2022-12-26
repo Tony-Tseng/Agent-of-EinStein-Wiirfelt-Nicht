@@ -33,7 +33,7 @@ void NegaScout::Generate_move(char* move){
 
 		float score = Star1_F(traverse, std::max(alpha, val), beta, search_depth-1); // negascout
 
-		if(score>val + 1e-5){
+		if(score>val){
 			val = score;
 			result_index = i;
 		}
@@ -56,34 +56,19 @@ float NegaScout::Star1_F(Board* b, float alpha, float beta, int depth){
 	for(int i=0;i<6;i++){
 		b->dice = i+1;
 		tmp = Search_G(b, std::max(A, (float)MINVALUE), std::min(B, (float)MAXVALUE), depth);
-		// tmp = Search_G(b, MINVALUE, MAXVALUE, depth);
 
 		m = m + (tmp-MINVALUE) / 6.0;
 		M = M + (tmp-MAXVALUE) / 6.0;
 
-		// if(m >=beta) return m;
-		// if(M <=alpha) return M;
-
-		if(tmp >= B){
-			m = m * 100000;
-			m = floor(m);
-			return m/100000;
-		} 
-		if(tmp <= A){
-			M = M * 100000;
-			M = floor(M);
-			return M/100000;
-		}
+		if(tmp >= B) return truncate(m, 5);
+		if(tmp <= A) return truncate(M, 5);
 
 		v_sum += tmp;
 		A = A + MAXVALUE -tmp;
 		B = B + MINVALUE -tmp;
 	}
 
-	v_sum = v_sum / 6.0;
-	v_sum = v_sum * 100000;
-	v_sum = floor(v_sum);
-	return v_sum/100000;
+	return truncate(v_sum / 6.0, 5);
 }
 
 float NegaScout::Star1_G(Board* b, float alpha, float beta, int depth){
@@ -97,34 +82,19 @@ float NegaScout::Star1_G(Board* b, float alpha, float beta, int depth){
 	for(int i=0;i<6;i++){
 		b->dice = i+1;
 		tmp = Search_F(b, std::max(A, (float)MINVALUE), std::min(B, (float)MAXVALUE), depth);
-		// tmp = Search_F(b, MINVALUE, MAXVALUE, depth);
 
 		m = m + (tmp-MINVALUE) / 6.0;
 		M = M + (tmp-MAXVALUE) / 6.0;
 
-		// if(m >=beta) return m;
-		// if(M <=alpha) return M;
-
-		if(tmp >= B){
-			m = m * 100000;
-			m = floor(m);
-			return m/100000;
-		} 
-		if(tmp <= A){
-			M = M * 100000;
-			M = floor(M);
-			return M/100000;
-		}
+		if(tmp >= B) return truncate(m, 5);
+		if(tmp <= A) return truncate(M, 5);
 
 		v_sum += tmp;
 		A = A + MAXVALUE -tmp;
 		B = B + MINVALUE -tmp;
 	}
 
-	v_sum = v_sum / 6.0;
-	v_sum = v_sum * 100000;
-	v_sum = floor(v_sum);
-	return v_sum/100000;
+	return truncate(v_sum / 6.0, 5);
 }
 
 float NegaScout::Search_F(Board* b, float alpha, float beta, int depth){
@@ -175,7 +145,6 @@ float NegaScout::Search_F(Board* b, float alpha, float beta, int depth){
 		traverse->hash_value = next_hash;
 
 		float score = Star1_F(traverse, val, val+1, depth-1); // negascout
-		// if(abs(score) < 1e-5) score = 0;
 
 		if(score>val){
 			if( score>=beta ){
@@ -286,6 +255,13 @@ float NegaScout::evaluate(Board* b, int color){
 		final_score += i == root->color ? -score: score;
 	}
 	return final_score;
+}
+
+float NegaScout::truncate(float value, int num){
+	float temp = pow(10, num);
+	value = value * temp;
+	value = floor(value);
+	return value/temp;
 }
 
 // float NegaScout::Search_F(Board* b, float alpha, float beta, int depth){
