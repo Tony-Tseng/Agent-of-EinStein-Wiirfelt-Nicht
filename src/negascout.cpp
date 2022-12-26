@@ -33,7 +33,7 @@ void NegaScout::Generate_move(char* move){
 
 		float score = Star1_F(traverse, std::max(alpha, val), beta, search_depth-1); // negascout
 
-		if(score>val){
+		if(score>val + 1e-5){
 			val = score;
 			result_index = i;
 		}
@@ -102,23 +102,23 @@ float NegaScout::Search_F(Board* b, float alpha, float beta, int depth){
 	*traverse = *b;
 
 	// Trasposition Table Check
-	// int table_index = transposition_table->Get_board_index(traverse);
-	// Table_Entry entry = transposition_table->table[table_index];
-	// if( entry.occupied && entry.depth >= depth ){
-	// 	bool check_same = transposition_table->Check_same_state(traverse, table_index);
-	// 	if(check_same){
-	// 		if(entry.value_type == EXACT_VALUE) 
-	// 			return entry.best_value;
-	// 		if (entry.value_type == LOWER_BOUND){
-	// 			alpha = std::max(alpha, entry.best_value);
-	// 			if(alpha >=beta) return alpha;
-	// 		} 
-	// 		else if (entry.value_type == UPPER_BOUND){
-	// 			beta = std::min(beta, entry.best_value);
-	// 			if(alpha >=beta) return beta;
-	// 		} 
-	// 	}
-	// }
+	int table_index = transposition_table->Get_board_index(traverse);
+	Table_Entry entry = transposition_table->table[table_index];
+	if( entry.occupied && entry.depth >= depth ){
+		bool check_same = transposition_table->Check_same_state(traverse, table_index);
+		if(check_same){
+			if(entry.value_type == EXACT_VALUE) 
+				return entry.best_value;
+			if (entry.value_type == LOWER_BOUND){
+				alpha = std::max(alpha, entry.best_value);
+				if(alpha >=beta + 1e-5) return alpha;
+			} 
+			else if (entry.value_type == UPPER_BOUND){
+				beta = std::min(beta, entry.best_value);
+				if(alpha >=beta + 1e-5) return beta;
+			} 
+		}
+	}
 	// End Table Check
 	int best_index = 0;
 
@@ -131,22 +131,23 @@ float NegaScout::Search_F(Board* b, float alpha, float beta, int depth){
 	float val = -100; // m
 	int i=0;
 	int next_hash = 0;
-	// next_hash = transposition_table->Calculate_hash_by_move(traverse, traverse->hash_value, result[i*3], result[i*3+1], result[i*3+2]);
+	next_hash = transposition_table->Calculate_hash_by_move(traverse, traverse->hash_value, result[i*3], result[i*3+1], result[i*3+2]);
 	traverse->Make_move(result[i*3], result[i*3+1], result[i*3+2]);
-	// traverse->hash_value = next_hash;
+	traverse->hash_value = next_hash;
 
 	val = std::max(val, Star1_F(traverse, alpha, beta, depth-1));
 	*traverse = *b;
 	if(val>=beta) return val;
 
 	for(i=1;i<move_count;i++){
-		// next_hash = transposition_table->Calculate_hash_by_move(traverse, traverse->hash_value, result[i*3], result[i*3+1], result[i*3+2]);
+		next_hash = transposition_table->Calculate_hash_by_move(traverse, traverse->hash_value, result[i*3], result[i*3+1], result[i*3+2]);
 		traverse->Make_move(result[i*3], result[i*3+1], result[i*3+2]);
-		// traverse->hash_value = next_hash;
+		traverse->hash_value = next_hash;
 
 		float score = Star1_F(traverse, val, val+1, depth-1); // negascout
+		// if(abs(score) < 1e-5) score = 0;
 
-		if(score>val){
+		if(score>val+1e-5){
 			if( score>=beta ){
 				val = score;
 			}
@@ -154,17 +155,17 @@ float NegaScout::Search_F(Board* b, float alpha, float beta, int depth){
 			best_index = i;
 		}
 		if(val>=beta){
-			// transposition_table->Set_entry(traverse, depth, val, LOWER_BOUND, result, best_index);
+			transposition_table->Set_entry(traverse, depth, val, LOWER_BOUND, result, best_index);
 			return val;
 		}
 		*traverse = *b;
 	}
-	// next_hash = transposition_table->Calculate_hash_by_move(traverse, traverse->hash_value, result[best_index*3], result[best_index*3+1], result[best_index*3+2]);
-	// traverse->Make_move(result[best_index*3], result[best_index*3+1], result[best_index*3+2]);
-	// traverse->hash_value = next_hash;
+	next_hash = transposition_table->Calculate_hash_by_move(traverse, traverse->hash_value, result[best_index*3], result[best_index*3+1], result[best_index*3+2]);
+	traverse->Make_move(result[best_index*3], result[best_index*3+1], result[best_index*3+2]);
+	traverse->hash_value = next_hash;
 	
-	// if( val > alpha) transposition_table->Set_entry(traverse, depth, val, EXACT_VALUE, result, best_index);
-	// else transposition_table->Set_entry(traverse, depth, val, UPPER_BOUND, result, best_index);
+	if( val > alpha) transposition_table->Set_entry(traverse, depth, val, EXACT_VALUE, result, best_index);
+	else transposition_table->Set_entry(traverse, depth, val, UPPER_BOUND, result, best_index);
 
 	return val;
 }
@@ -175,23 +176,23 @@ float NegaScout::Search_G(Board* b, float alpha, float beta, int depth){
 	*traverse = *b;
 
 	// Trasposition Table Check
-	// int table_index = transposition_table->Get_board_index(traverse);
-	// Table_Entry entry = transposition_table->table[table_index];
-	// if( entry.occupied && entry.depth >= depth ){
-	// 	bool check_same = transposition_table->Check_same_state(traverse, table_index);
-	// 	if(check_same){
-	// 		if(entry.value_type == EXACT_VALUE) 
-	// 			return entry.best_value;
-	// 		if(entry.value_type == LOWER_BOUND){
-	// 			alpha = std::max(alpha, entry.best_value);
-	// 			if(alpha >=beta) return alpha;
-	// 		} 
-	// 		else if (entry.value_type == UPPER_BOUND){
-	// 			beta = std::min(beta, entry.best_value);
-	// 			if(alpha >=beta) return beta;
-	// 		} 
-	// 	}
-	// }
+	int table_index = transposition_table->Get_board_index(traverse);
+	Table_Entry entry = transposition_table->table[table_index];
+	if( entry.occupied && entry.depth >= depth ){
+		bool check_same = transposition_table->Check_same_state(traverse, table_index);
+		if(check_same){
+			if(entry.value_type == EXACT_VALUE) 
+				return entry.best_value;
+			if(entry.value_type == LOWER_BOUND){
+				alpha = std::max(alpha, entry.best_value);
+				if( abs(alpha-beta) >= 1e-5 ) return alpha;
+			} 
+			else if (entry.value_type == UPPER_BOUND){
+				beta = std::min(beta, entry.best_value);
+				if( abs(alpha-beta) >= 1e-5 ) return beta;
+			} 
+		}
+	}
 	// End Table Check
 	int best_index = 0;
 
@@ -204,22 +205,23 @@ float NegaScout::Search_G(Board* b, float alpha, float beta, int depth){
 	float val = 100; // m
 	int i=0;
 	int next_hash = 0;
-	// next_hash = transposition_table->Calculate_hash_by_move(traverse, traverse->hash_value, result[i*3], result[i*3+1], result[i*3+2]);
+	next_hash = transposition_table->Calculate_hash_by_move(traverse, traverse->hash_value, result[i*3], result[i*3+1], result[i*3+2]);
 	traverse->Make_move(result[i*3], result[i*3+1], result[i*3+2]);
-	// traverse->hash_value = next_hash;
+	traverse->hash_value = next_hash;
 
 	val = std::min(val, Star1_G(traverse, alpha, beta, depth-1));
 	*traverse = *b;
 	if(val<=alpha) return val;
 
 	for(i=1;i<move_count;i++){
-		// next_hash = transposition_table->Calculate_hash_by_move(traverse, traverse->hash_value, result[i*3], result[i*3+1], result[i*3+2]);
+		next_hash = transposition_table->Calculate_hash_by_move(traverse, traverse->hash_value, result[i*3], result[i*3+1], result[i*3+2]);
 		traverse->Make_move(result[i*3], result[i*3+1], result[i*3+2]);
-		// traverse->hash_value = next_hash;
+		traverse->hash_value = next_hash;
 
 		float score = Star1_G(traverse, val-1, val, depth-1); // negascout
+		// if(abs(score) < 1e-5) score = 0;
 
-		if(score<val){
+		if( score < val-1e-5 ){
 			if( score<=alpha ){
 				val = score;
 			}
@@ -227,17 +229,17 @@ float NegaScout::Search_G(Board* b, float alpha, float beta, int depth){
 			best_index = i;
 		}
 		if(val<=alpha){
-			// transposition_table->Set_entry(traverse, depth, val, UPPER_BOUND, result, best_index);
+			transposition_table->Set_entry(traverse, depth, val, UPPER_BOUND, result, best_index);
 			return val;
 		}
 		*traverse = *b;
 	}
-	// next_hash = transposition_table->Calculate_hash_by_move(traverse, traverse->hash_value, result[best_index*3], result[best_index*3+1], result[best_index*3+2]);
-	// traverse->Make_move(result[best_index*3], result[best_index*3+1], result[best_index*3+2]);
-	// traverse->hash_value = next_hash;
+	next_hash = transposition_table->Calculate_hash_by_move(traverse, traverse->hash_value, result[best_index*3], result[best_index*3+1], result[best_index*3+2]);
+	traverse->Make_move(result[best_index*3], result[best_index*3+1], result[best_index*3+2]);
+	traverse->hash_value = next_hash;
 	
-	// if( val < beta) transposition_table->Set_entry(traverse, depth, val, EXACT_VALUE, result, best_index);
-	// else transposition_table->Set_entry(traverse, depth, val, LOWER_BOUND, result, best_index);
+	if( val < beta) transposition_table->Set_entry(traverse, depth, val, EXACT_VALUE, result, best_index);
+	else transposition_table->Set_entry(traverse, depth, val, LOWER_BOUND, result, best_index);
 	return val;
 }
 
@@ -252,7 +254,7 @@ float NegaScout::evaluate(Board* b, int color){
 			int distance = abs(b->cube_position[i*6+j] - target[i]);
 			score = std::max( score, (float) (8.0 - (distance/5 + distance%5) ) );
 		}
-		final_score += i == 0 ? -score: score;
+		final_score += i == root->color ? -score: score;
 	}
 	return final_score;
 }

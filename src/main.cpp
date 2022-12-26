@@ -73,8 +73,10 @@ int main(){
   FILE *fp, *ans;
   fp = fopen("../input.txt", "r");
   ans = fopen("../myans.txt", "w");
+  fclose(ans);
   do{
     // read command
+    ans = fopen("../myans.txt", "a");
     fgets(read, 1024, fp);
     fprintf(stderr, "%s", read);
     // remove newline(\n)
@@ -122,9 +124,10 @@ int main(){
 
     sprintf(output, "%s\n", write);
     fputs(output, ans);
+    fclose(ans);
 
   }while(feof(fp) == 0);
-  fclose(ans);
+  
   #endif
 
   delete myai;
