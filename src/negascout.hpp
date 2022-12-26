@@ -1,5 +1,6 @@
 #pragma once
 
+#include <math.h>
 #include "board.hpp"
 #include "table.hpp"
 

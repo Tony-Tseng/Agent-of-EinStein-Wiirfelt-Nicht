@@ -56,19 +56,34 @@ float NegaScout::Star1_F(Board* b, float alpha, float beta, int depth){
 	for(int i=0;i<6;i++){
 		b->dice = i+1;
 		tmp = Search_G(b, std::max(A, (float)MINVALUE), std::min(B, (float)MAXVALUE), depth);
+		// tmp = Search_G(b, MINVALUE, MAXVALUE, depth);
 
 		m = m + (tmp-MINVALUE) / 6.0;
 		M = M + (tmp-MAXVALUE) / 6.0;
 
-		if(tmp >= B) return m;
-		if(tmp <= A) return M;
+		// if(m >=beta) return m;
+		// if(M <=alpha) return M;
+
+		if(tmp >= B){
+			m = m * 100000;
+			m = floor(m);
+			return m/100000;
+		} 
+		if(tmp <= A){
+			M = M * 100000;
+			M = floor(M);
+			return M/100000;
+		}
 
 		v_sum += tmp;
 		A = A + MAXVALUE -tmp;
 		B = B + MINVALUE -tmp;
 	}
 
-	return v_sum/6;
+	v_sum = v_sum / 6.0;
+	v_sum = v_sum * 100000;
+	v_sum = floor(v_sum);
+	return v_sum/100000;
 }
 
 float NegaScout::Star1_G(Board* b, float alpha, float beta, int depth){
@@ -82,19 +97,34 @@ float NegaScout::Star1_G(Board* b, float alpha, float beta, int depth){
 	for(int i=0;i<6;i++){
 		b->dice = i+1;
 		tmp = Search_F(b, std::max(A, (float)MINVALUE), std::min(B, (float)MAXVALUE), depth);
+		// tmp = Search_F(b, MINVALUE, MAXVALUE, depth);
 
 		m = m + (tmp-MINVALUE) / 6.0;
 		M = M + (tmp-MAXVALUE) / 6.0;
 
-		if(tmp >= B) return m;
-		if(tmp <= A) return M;
+		// if(m >=beta) return m;
+		// if(M <=alpha) return M;
+
+		if(tmp >= B){
+			m = m * 100000;
+			m = floor(m);
+			return m/100000;
+		} 
+		if(tmp <= A){
+			M = M * 100000;
+			M = floor(M);
+			return M/100000;
+		}
 
 		v_sum += tmp;
 		A = A + MAXVALUE -tmp;
 		B = B + MINVALUE -tmp;
 	}
 
-	return v_sum/6;
+	v_sum = v_sum / 6.0;
+	v_sum = v_sum * 100000;
+	v_sum = floor(v_sum);
+	return v_sum/100000;
 }
 
 float NegaScout::Search_F(Board* b, float alpha, float beta, int depth){
@@ -111,11 +141,11 @@ float NegaScout::Search_F(Board* b, float alpha, float beta, int depth){
 				return entry.best_value;
 			if (entry.value_type == LOWER_BOUND){
 				alpha = std::max(alpha, entry.best_value);
-				if(alpha >=beta + 1e-5) return alpha;
+				if(alpha >=beta) return alpha;
 			} 
 			else if (entry.value_type == UPPER_BOUND){
 				beta = std::min(beta, entry.best_value);
-				if(alpha >=beta + 1e-5) return beta;
+				if(alpha >=beta) return beta;
 			} 
 		}
 	}
@@ -147,7 +177,7 @@ float NegaScout::Search_F(Board* b, float alpha, float beta, int depth){
 		float score = Star1_F(traverse, val, val+1, depth-1); // negascout
 		// if(abs(score) < 1e-5) score = 0;
 
-		if(score>val+1e-5){
+		if(score>val){
 			if( score>=beta ){
 				val = score;
 			}
@@ -185,11 +215,11 @@ float NegaScout::Search_G(Board* b, float alpha, float beta, int depth){
 				return entry.best_value;
 			if(entry.value_type == LOWER_BOUND){
 				alpha = std::max(alpha, entry.best_value);
-				if( abs(alpha-beta) >= 1e-5 ) return alpha;
+				if( alpha >= beta ) return alpha;
 			} 
 			else if (entry.value_type == UPPER_BOUND){
 				beta = std::min(beta, entry.best_value);
-				if( abs(alpha-beta) >= 1e-5 ) return beta;
+				if( alpha >= beta ) return beta;
 			} 
 		}
 	}
@@ -219,9 +249,8 @@ float NegaScout::Search_G(Board* b, float alpha, float beta, int depth){
 		traverse->hash_value = next_hash;
 
 		float score = Star1_G(traverse, val-1, val, depth-1); // negascout
-		// if(abs(score) < 1e-5) score = 0;
 
-		if( score < val-1e-5 ){
+		if(score<val){
 			if( score<=alpha ){
 				val = score;
 			}
