@@ -1,6 +1,7 @@
 #pragma once
 
 #include <time.h>
+#include <math.h>
 #include "board.hpp"
 #include "table.hpp"
 
@@ -35,6 +36,7 @@ public:
 	float Search_G(Board* b, float alpha, float beta, int depth);
 
 	float evaluate(Board* b, int color);
+	float truncate(float value, int num);
 
 private:
 	Board* root = new Board();
