@@ -2,16 +2,50 @@
 #include <string.h>
 #include "game.hpp"
 
+#include <semaphore.h>
+
 int main(){
   srand(time(NULL));
   char read[1024], write[1024], output[2048], *token;
   const char *data[20];
   //   bool isFailed;
+
   Game* myai = new Game();
   do{
     // read command
+
+    bool stop=false;
+    sem_t sem;
+    sem_init(&sem, 0, 0);
+
+    myai->create_thread(&stop, &sem);
+    /* create thread 
+        - main_thread
+        - sub_thread
+        semaphore
+
+        main_thread: 
+            1. do nothing, wait for fgets
+            
+        sub_thread: 
+            1. do search until semaphore is trigger
+            while (!stop) {
+                ponder()
+            }
+            
+    */
+
     fgets(read, 1024, stdin);
+
+    // if check guess correct
+    // else AI = new NegaScout();
+    stop = true;
+
+    sem_wait(&sem);
+    
+    
     fprintf(stderr, "%s", read);
+    
     // remove newline(\n)
     read[strlen(read) - 1] = '\0';
     // get command name

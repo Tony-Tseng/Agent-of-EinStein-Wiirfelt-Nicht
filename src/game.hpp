@@ -43,4 +43,6 @@ public:
 
 private:
 	Board* state;
+	NegaScout* AI ;
+	NegaScout* ponder_AIs[18];
 };

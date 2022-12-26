@@ -48,8 +48,56 @@ void Game::Ini(const char* data[], char* response)
 
 }
 
+
+struct ThreadInput {
+
+}
+
+void Game::create_thread(bool* stop, sem_t* sem) {
+	ThreadInput* data = new ThreadInput(stop, sem);
+	pthread_create(this->run_subthread, (void*) data);
+	return;
+}
+
+void* Game::run_subthread(void* thread_input_void) {
+	ThreadInput* thread_input = (ThreadInput*) thread_input_void;
+	bool* stop = thread_input->stop;
+	sem_t* sem = thread_input->sem;
+	AI = new NegaScout(state);
+
+	for () {
+
+	}
+	ponder_AIs.clear()
+	int child_index=0; /* 0~9*/
+	while(!stop) {
+		ponder(child_index);
+		child_index ++;
+		if (child_index > 9) break;
+	}
+	sem_post(sem);
+
+	pthread_exit(NULL);
+}
+
+void Game::ponder(int child_move){
+	root->make_move(child_move);
+	
+	ponder_AIs[child_move] = new NegaScout(root);
+	AI->Generate_move(move);
+}
+
+
 void Game::Get(const char* data[], char* response)
 {
+	if (AI == nullptr) {
+		AI = new NegaScout(state);
+	}
+	else {
+		// if (check guess correct)
+		//      
+		// else AI = new NegaScout();
+	}
 	// set color
 	if(!strcmp(data[1], "R"))
 	{
@@ -69,12 +117,12 @@ void Game::Get(const char* data[], char* response)
 
 	// generate move
 	char move[4];
-	NegaScout* AI = new NegaScout(state);
 	// AI->Generate_random_move(move);
 	AI->timer(true);
 	AI->Generate_move(move);
 	sprintf(response, "%c%c %c%c", move[0], move[1], move[2], move[3]);
 	delete AI;
+	AI = nullptr;
 }
 
 void Game::Exit(const char* data[], char* response)
