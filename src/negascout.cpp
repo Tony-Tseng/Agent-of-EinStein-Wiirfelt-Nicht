@@ -33,7 +33,7 @@ void NegaScout::Generate_move(char* move){
 		float score = Star0_F(traverse, std::max(alpha, val), beta, search_depth-1); // negascout
 		// b->Print_chessboard();
 
-		if(score>val + 1e-5){
+		if(score>val){
 			val = score;
 			result_index = i;
 		}
@@ -71,15 +71,26 @@ float NegaScout::Star0_F(Board* b, float alpha, float beta, int depth){
 		// if(m >=beta) return m;
 		// if(M <=alpha) return M;
 
-		if(tmp >= B) return m;
-		if(tmp <= A) return M;
+		if(tmp >= B){
+			m = m * 100000;
+			m = floor(m);
+			return m/100000;
+		} 
+		if(tmp <= A){
+			M = M * 100000;
+			M = floor(M);
+			return M/100000;
+		}
 
 		v_sum += tmp;
 		A = A + MAXVALUE -tmp;
 		B = B + MINVALUE -tmp;
 	}
 
-	return v_sum/6;
+	v_sum = v_sum / 6.0;
+	v_sum = v_sum * 100000;
+	v_sum = floor(v_sum);
+	return v_sum/100000;
 }
 
 float NegaScout::Star0_G(Board* b, float alpha, float beta, int depth){
@@ -101,15 +112,26 @@ float NegaScout::Star0_G(Board* b, float alpha, float beta, int depth){
 		// if(m >=beta) return m;
 		// if(M <=alpha) return M;
 
-		if(tmp >= B) return m;
-		if(tmp <= A) return M;
+		if(tmp >= B){
+			m = m * 100000;
+			m = floor(m);
+			return m/100000;
+		} 
+		if(tmp <= A){
+			M = M * 100000;
+			M = floor(M);
+			return M/100000;
+		}
 
 		v_sum += tmp;
 		A = A + MAXVALUE -tmp;
 		B = B + MINVALUE -tmp;
 	}
 
-	return v_sum/6;
+	v_sum = v_sum / 6.0;
+	v_sum = v_sum * 100000;
+	v_sum = floor(v_sum);
+	return v_sum/100000;
 }
 
 float NegaScout::Search_F(Board* b, float alpha, float beta, int depth){
