@@ -63,9 +63,13 @@ float NegaScout::Star0_F(Board* b, float alpha, float beta, int depth){
 	for(int i=0;i<6;i++){
 		b->dice = i+1;
 		tmp = Search_G(b, std::max(A, (float)MINVALUE), std::min(B, (float)MAXVALUE), depth);
+		// tmp = Search_G(b, MINVALUE, MAXVALUE, depth);
 
 		m = m + (tmp-MINVALUE) / 6.0;
 		M = M + (tmp-MAXVALUE) / 6.0;
+
+		// if(m >=beta) return m;
+		// if(M <=alpha) return M;
 
 		if(tmp >= B) return m;
 		if(tmp <= A) return M;
@@ -89,9 +93,13 @@ float NegaScout::Star0_G(Board* b, float alpha, float beta, int depth){
 	for(int i=0;i<6;i++){
 		b->dice = i+1;
 		tmp = Search_F(b, std::max(A, (float)MINVALUE), std::min(B, (float)MAXVALUE), depth);
+		// tmp = Search_F(b, MINVALUE, MAXVALUE, depth);
 
 		m = m + (tmp-MINVALUE) / 6.0;
 		M = M + (tmp-MAXVALUE) / 6.0;
+
+		// if(m >=beta) return m;
+		// if(M <=alpha) return M;
 
 		if(tmp >= B) return m;
 		if(tmp <= A) return M;
@@ -132,7 +140,7 @@ float NegaScout::Search_F(Board* b, float alpha, float beta, int depth){
 		// b->Print_chessboard();
 
 		if(score>val){
-			if( score>=beta || depth<3){
+			if( score>=beta ){
 				val = score;
 			}
 			else val = Star0_F(traverse, score, beta, depth-1);
@@ -173,7 +181,7 @@ float NegaScout::Search_G(Board* b, float alpha, float beta, int depth){
 		// b->Print_chessboard();
 
 		if(score<val){
-			if( score<=alpha || depth<3){
+			if( score<=alpha ){
 				val = score;
 			}
 			else val = Star0_G(traverse, alpha, score, depth-1);
@@ -196,7 +204,7 @@ float NegaScout::evaluate(Board* b, int color){
 			int distance = abs(b->cube_position[i*6+j] - target[i]);
 			score = std::max( score, (float) (8.0 - (distance/5 + distance%5) ) );
 		}
-		final_score += i == 0 ? -score: score;
+		final_score += i == tree_node[0].state->color ? -score: score;
 	}
 	return final_score;
 }
