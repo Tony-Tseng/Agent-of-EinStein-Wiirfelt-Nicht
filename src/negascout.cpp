@@ -33,7 +33,7 @@ void NegaScout::Generate_move(char* move){
 		float score = Star0_F(traverse, std::max(alpha, val), beta, search_depth-1); // negascout
 		// b->Print_chessboard();
 
-		if(score>val){
+		if(score>val + 1e-5){
 			val = score;
 			result_index = i;
 		}
