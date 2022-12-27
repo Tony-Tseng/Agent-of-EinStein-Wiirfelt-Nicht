@@ -163,7 +163,7 @@ float NegaScout::Search_F(Board* b, float alpha, float beta, int depth){
 	int result[100];
 	int move_count = traverse->get_legal_move(result);
 	if(depth==0 || move_count == 0 || b->is_game_over() || timer(false) >= time_limit){
-		return evaluate(b, b->color);
+		return evaluate(b);
 	}
 
 	float val = -100; // m
@@ -235,7 +235,7 @@ float NegaScout::Search_G(Board* b, float alpha, float beta, int depth){
 	int result[100];
 	int move_count = traverse->get_legal_move(result);
 	if(depth==0 || move_count == 0 || b->is_game_over() || timer(false) >= time_limit){ // time limit
-		return evaluate(b, b->color);
+		return evaluate(b);
 	}
 
 	float val = 100; // m
@@ -278,19 +278,13 @@ float NegaScout::Search_G(Board* b, float alpha, float beta, int depth){
 	return val;
 }
 
-float NegaScout::evaluate(Board* b, int color){
-	int target[2] = {0, 24};
-	float score = 0.0;
+float NegaScout::evaluate(Board* b){
 	float final_score = 0.0;
-	for(int i=0;i<2;i++){
-		score = 0.0;
-		for(int j=0;j<6;j++){
-			if(b->cube_position[i*6+j] == -1) continue;
-			int distance = abs(b->cube_position[i*6+j] - target[i]);
-			score = std::max( score, (float) (8.0 - (distance/5 + distance%5) ) );
-		}
-		final_score += i == root->color ? -score: score;
+
+	for(int i=0;i<num_strategy;i++){
+		final_score += strategy[i]->Evaluate(b, root->color) * weight[i];
 	}
+
 	return final_score;
 }
 

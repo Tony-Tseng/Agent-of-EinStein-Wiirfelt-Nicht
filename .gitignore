@@ -2,5 +2,7 @@
 EWN_windows10_20220913_5_4_3/
 random
 negascout
+negascout_manhattan
+negascout_cubemove
 *.dSYM
 .vscode/

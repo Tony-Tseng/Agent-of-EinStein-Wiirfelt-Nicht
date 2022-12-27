@@ -4,10 +4,11 @@
 #include <math.h>
 #include "board.hpp"
 #include "table.hpp"
+#include "strategy.hpp"
 
 #define MAXNODE 1
-#define MAXVALUE 8
-#define MINVALUE -8
+// #define MAXVALUE 8
+// #define MINVALUE -8
 
 class NegaScout
 {
@@ -16,10 +17,24 @@ public:
 	double time_limit = 10.0;
 	int depth_limit = 5;
 	float threshold = 2;
+	const int num_strategy = 2;
+	float weight[2] = {1.0, 0.5};
+	Strategy* strategy[2] = {new Manhattan(), new Threaten()};
+	float MINVALUE = 0.0;
+	float MAXVALUE = 0.0;
+	
+
 	NegaScout(Board *b){
 		*root = *b;
 		int hash_value = transposition_table->Calculate_hash(root);
 		root->hash_value = hash_value;
+
+		std::pair<float, float> bound;
+		for(int i=0;i<num_strategy;i++){
+			bound = strategy[i]->GetBound();
+			MINVALUE += bound.first * weight[i];
+			MAXVALUE += bound.second * weight[i];
+		}
 	};
 	~NegaScout(){
 	};
@@ -35,7 +50,8 @@ public:
 	float Search_F(Board* b, float alpha, float beta, int depth);
 	float Search_G(Board* b, float alpha, float beta, int depth);
 
-	float evaluate(Board* b, int color);
+	// float evaluate(Board* b, int color);
+	float evaluate(Board* b);
 	float truncate(float value, int num);
 
 private:
