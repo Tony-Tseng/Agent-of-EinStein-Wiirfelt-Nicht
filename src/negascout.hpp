@@ -13,9 +13,9 @@ class NegaScout
 {
 public:
 	struct timespec tick, tock;
-	double time_limit = 5.0;
+	double time_limit = 10.0;
 	int depth_limit = 5;
-	float threshold = 2.0;
+	float threshold = 2;
 	NegaScout(Board *b){
 		*root = *b;
 		int hash_value = transposition_table->Calculate_hash(root);

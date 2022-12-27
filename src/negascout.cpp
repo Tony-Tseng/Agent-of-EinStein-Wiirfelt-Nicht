@@ -27,7 +27,7 @@ void NegaScout::Generate_move(char* move){
 	float beta = 100;
 	std::pair<int ,float> IDAS_result = First_F(alpha, beta, 3);
 	std::pair<int ,float> IDAS_tmp;
-	int current_depth = 4;
+	int current_depth = 5;
 	
 	while( timer(false) < time_limit && current_depth <= depth_limit){
 		IDAS_tmp = First_F(IDAS_result.second-threshold, IDAS_result.second+threshold, current_depth);
