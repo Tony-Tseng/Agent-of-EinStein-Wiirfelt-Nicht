@@ -9,6 +9,10 @@ double NegaScout::timer(bool reset){
 	return (double) ((tock.tv_sec + tock.tv_nsec*1e-9)-(double) (tick.tv_sec + tick.tv_nsec*1e-9));
 }
 
+void NegaScout::set_time_limit(double time_limit){
+	this->time_limit = time_limit;
+}
+
 void NegaScout::Generate_random_move(char* move){
 	int result[100];
 	// get legal moves
@@ -23,11 +27,17 @@ void NegaScout::Generate_random_move(char* move){
 }
 
 void NegaScout::Generate_move(char* move){
+	double total_time = 0.0;
+	double prev_time = 0.0, curr_time = 0.0;
 	float alpha = -100;
 	float beta = 100;
+
 	std::pair<int ,float> IDAS_result = First_F(alpha, beta, 3);
+	prev_time = timer(false);
+	total_time = timer(false);
+
 	std::pair<int ,float> IDAS_tmp;
-	int current_depth = 5;
+	int current_depth = 4;
 	
 	while( timer(false) < time_limit && current_depth <= depth_limit){
 		IDAS_tmp = First_F(IDAS_result.second-threshold, IDAS_result.second+threshold, current_depth);
@@ -38,11 +48,25 @@ void NegaScout::Generate_move(char* move){
 			IDAS_tmp = First_F(IDAS_tmp.second, beta, current_depth);
 		}
 
+		curr_time = timer(false) - total_time;
+		total_time = timer(false);
+
+		// std::cout << curr_time << " " << prev_time << " " << total_time << std::endl;
+		
 		// if(IDAS_tmp.second > IDAS_result.second){
 		IDAS_result = IDAS_tmp;
 		// }
 		// Need to determine whether the time is enough
+		double time_left = time_limit - total_time;
+		double time_times = curr_time / prev_time;
 
+		// std::cout << current_depth << " " << time_times * std::max(curr_time, 1.0) * 0.9 << " " << time_left << std::endl;
+		
+		if( time_times * std::max(curr_time, 1.0) * 0.9 > time_left ){
+			break;
+		}
+		prev_time = curr_time;
+		
 		current_depth+=2;
 	}
 	
@@ -162,7 +186,7 @@ float NegaScout::Search_F(Board* b, float alpha, float beta, int depth){
 
 	int result[100];
 	int move_count = traverse->get_legal_move(result);
-	if(depth==0 || move_count == 0 || b->is_game_over() || timer(false) >= time_limit){
+	if(depth==0 || move_count == 0 || b->is_game_over() ){
 		return evaluate(b);
 	}
 
@@ -185,7 +209,7 @@ float NegaScout::Search_F(Board* b, float alpha, float beta, int depth){
 		float score = Star1_F(traverse, val, val+1, depth-1); // negascout
 
 		if(score>val){
-			if( score>=beta ){
+			if( score>=beta || depth<1 ){
 				val = score;
 			}
 			else val = Star1_F(traverse, score, beta, depth-1);
@@ -234,7 +258,7 @@ float NegaScout::Search_G(Board* b, float alpha, float beta, int depth){
 
 	int result[100];
 	int move_count = traverse->get_legal_move(result);
-	if(depth==0 || move_count == 0 || b->is_game_over() || timer(false) >= time_limit){ // time limit
+	if(depth==0 || move_count == 0 || b->is_game_over() ){ // time limit
 		return evaluate(b);
 	}
 
@@ -257,7 +281,7 @@ float NegaScout::Search_G(Board* b, float alpha, float beta, int depth){
 		float score = Star1_G(traverse, val-1, val, depth-1); // negascout
 
 		if(score<val){
-			if( score<=alpha ){
+			if( score<=alpha || depth<1 ){
 				val = score;
 			}
 			else val = Star1_G(traverse, alpha, score, depth-1);

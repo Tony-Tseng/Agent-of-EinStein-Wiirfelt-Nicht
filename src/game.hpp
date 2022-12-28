@@ -7,6 +7,7 @@
 #include <time.h>
 #include <string>
 #include "board.hpp"
+#include "time_controler.hpp"
 
 using std::stoi;
 using std::string;
@@ -27,9 +28,11 @@ class Game
 public:
 	Game(){
 		state = new Board();
+		time_controler = new TimeControler();
 	};
 	~Game(){
 		delete state;
+		delete time_controler;
 	};
 
 	// commands
@@ -43,4 +46,5 @@ public:
 
 private:
 	Board* state;
+	TimeControler* time_controler;
 };
