@@ -14,7 +14,7 @@ public:
 	int depth_limit = 5;
 	float threshold = 2;
 	const int num_strategy = 2;
-	float weight[3] = {0.81488095, 0.18038665, 0.07416915, };
+	float weight[3] = {0.81488095, 0.18038665, 0.07416915 };
 	float bias = 0.02727044;
 	Strategy* strategy[3] = {new CubeStep(), new Prob(), new Manhattan()};
 	float MINVALUE = 0.0;
