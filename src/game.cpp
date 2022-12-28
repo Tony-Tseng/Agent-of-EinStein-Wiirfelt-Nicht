@@ -50,7 +50,7 @@ void Game::Ini(const char* data[], char* response)
 
 void Game::Get(const char* data[], char* response)
 {
-	// time_controler->timer(true);
+	time_controler->timer(true);
 
 	// set color
 	if(!strcmp(data[1], "R"))
@@ -72,16 +72,17 @@ void Game::Get(const char* data[], char* response)
 	// generate move
 	char move[4];
 	NegaScout* AI = new NegaScout(state);
-	// AI->set_time_limit(time_controler->available_search_time());
+	AI->set_time_limit(time_controler->available_search_time());
+	// std::cout << time_controler->available_search_time() << std::endl;
 	// AI->Generate_random_move(move);
 	AI->timer(true);
 	AI->Generate_move(move);
 	sprintf(response, "%c%c %c%c", move[0], move[1], move[2], move[3]);
 	delete AI;
 
-	// double spend_time = time_controler->timer(false);
-	// time_controler->update_time(spend_time);
-	// time_controler->update_step();
+	double spend_time = time_controler->timer(false);
+	time_controler->update_time(spend_time);
+	time_controler->update_step();
 }
 
 void Game::Exit(const char* data[], char* response)
