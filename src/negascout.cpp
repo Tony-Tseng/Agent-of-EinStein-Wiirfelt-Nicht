@@ -9,6 +9,10 @@ double NegaScout::timer(bool reset){
 	return (double) ((tock.tv_sec + tock.tv_nsec*1e-9)-(double) (tick.tv_sec + tick.tv_nsec*1e-9));
 }
 
+void NegaScout::set_time_limit(double time_limit){
+	this->time_limit = time_limit;
+}
+
 void NegaScout::Generate_random_move(char* move){
 	int result[100];
 	// get legal moves
@@ -23,9 +27,15 @@ void NegaScout::Generate_random_move(char* move){
 }
 
 void NegaScout::Generate_move(char* move){
+	// double total_time = 0.0;
+	// double prev_time = 0.0, curr_time = 0.0;
 	float alpha = -100;
 	float beta = 100;
+
 	std::pair<int ,float> IDAS_result = First_F(alpha, beta, 3);
+	// prev_time = timer(false);
+	// total_time = timer(false);
+
 	std::pair<int ,float> IDAS_tmp;
 	int current_depth = 5;
 	
@@ -38,12 +48,21 @@ void NegaScout::Generate_move(char* move){
 			IDAS_tmp = First_F(IDAS_tmp.second, beta, current_depth);
 		}
 
+		// curr_time = timer(false) - total_time;
+		// total_time = timer(false);
+		
 		// if(IDAS_tmp.second > IDAS_result.second){
 		IDAS_result = IDAS_tmp;
 		// }
 		// Need to determine whether the time is enough
-
-		current_depth+=2;
+		// double time_left = time_limit - total_time;
+		// double time_times = curr_time / prev_time;
+		// if( time_times * curr_time * 0.9 > time_left ){
+		// 	break;
+		// }
+		// prev_time = curr_time;
+		
+		current_depth++;
 	}
 	
 	// Result index should iterate child to get the best move

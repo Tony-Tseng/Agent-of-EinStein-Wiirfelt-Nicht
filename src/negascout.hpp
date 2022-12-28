@@ -13,10 +13,10 @@ public:
 	double time_limit = 10.0;
 	int depth_limit = 5;
 	float threshold = 2;
-	// const int num_strategy = 2;
-	// float weight[3] = {0.81488095, 0.18038665, 0.07416915, };
+	// const int num_strategy = 3;
+	// float weight[3] = {0.07416915, 0.81488095, 0.18038665, };
 	// float bias = 0.02727044;
-	// Strategy* strategy[3] = {new CubeStep(), new Prob(), new Manhattan()};
+	// Strategy* strategy[3] = {new Manhattan(), new CubeStep(), new Prob(), };
 	const int num_strategy = 1;
 	float weight[1] = {1};
 	float bias = 0;
@@ -43,6 +43,7 @@ public:
 	};
 	double timer(bool reset);
 
+	void set_time_limit(double time_limit);
 	void Generate_random_move(char* move);
 	void Generate_move(char* move);
 
