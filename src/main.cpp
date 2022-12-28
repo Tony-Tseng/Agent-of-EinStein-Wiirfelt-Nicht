@@ -71,10 +71,14 @@ int main(){
 
   #ifdef DEBUG
   FILE *fp, *ans;
-  fp = fopen("../input.txt", "r");
-  ans = fopen("../myans.txt", "w");
+
+  fp = fopen("../verify/input.txt", "r");
+  ans = fopen("../verify/myans.txt", "w");
+  fclose(ans);
   do{
     // read command
+    ans = fopen("../verify/myans.txt", "a");
+
     fgets(read, 1024, fp);
     fprintf(stderr, "%s", read);
     // remove newline(\n)
@@ -122,9 +126,10 @@ int main(){
 
     sprintf(output, "%s\n", write);
     fputs(output, ans);
-
+    fclose(ans);
 
   }while(feof(fp) == 0);
+  
   #endif
 
   delete myai;

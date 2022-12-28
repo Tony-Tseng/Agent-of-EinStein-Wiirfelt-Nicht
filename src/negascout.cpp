@@ -27,7 +27,7 @@ void NegaScout::Generate_move(char* move){
 	float beta = 100;
 	std::pair<int ,float> IDAS_result = First_F(alpha, beta, 3);
 	std::pair<int ,float> IDAS_tmp;
-	int current_depth = 4;
+	int current_depth = 5;
 	
 	while( timer(false) < time_limit && current_depth <= depth_limit){
 		IDAS_tmp = First_F(IDAS_result.second-threshold, IDAS_result.second+threshold, current_depth);
@@ -98,15 +98,15 @@ float NegaScout::Star1_F(Board* b, float alpha, float beta, int depth){
 		m = m + (tmp-MINVALUE) / 6.0;
 		M = M + (tmp-MAXVALUE) / 6.0;
 
-		if(tmp >= B) return m;
-		if(tmp <= A) return M;
+		if(tmp >= B) return truncate(m, 5);
+		if(tmp <= A) return truncate(M, 5);
 
 		v_sum += tmp;
 		A = A + MAXVALUE -tmp;
 		B = B + MINVALUE -tmp;
 	}
 
-	return v_sum/6;
+	return truncate(v_sum / 6.0, 5);
 }
 
 float NegaScout::Star1_G(Board* b, float alpha, float beta, int depth){
@@ -124,15 +124,15 @@ float NegaScout::Star1_G(Board* b, float alpha, float beta, int depth){
 		m = m + (tmp-MINVALUE) / 6.0;
 		M = M + (tmp-MAXVALUE) / 6.0;
 
-		if(tmp >= B) return m;
-		if(tmp <= A) return M;
+		if(tmp >= B) return truncate(m, 5);
+		if(tmp <= A) return truncate(M, 5);
 
 		v_sum += tmp;
 		A = A + MAXVALUE -tmp;
 		B = B + MINVALUE -tmp;
 	}
 
-	return v_sum/6;
+	return truncate(v_sum / 6.0, 5);
 }
 
 float NegaScout::Search_F(Board* b, float alpha, float beta, int depth){
@@ -163,7 +163,7 @@ float NegaScout::Search_F(Board* b, float alpha, float beta, int depth){
 	int result[100];
 	int move_count = traverse->get_legal_move(result);
 	if(depth==0 || move_count == 0 || b->is_game_over() || timer(false) >= time_limit){
-		return evaluate(b, b->color);
+		return evaluate(b);
 	}
 
 	float val = -100; // m
@@ -185,7 +185,7 @@ float NegaScout::Search_F(Board* b, float alpha, float beta, int depth){
 		float score = Star1_F(traverse, val, val+1, depth-1); // negascout
 
 		if(score>val){
-			if( score>=beta || depth<3){
+			if( score>=beta ){
 				val = score;
 			}
 			else val = Star1_F(traverse, score, beta, depth-1);
@@ -221,11 +221,11 @@ float NegaScout::Search_G(Board* b, float alpha, float beta, int depth){
 				return entry.best_value;
 			if(entry.value_type == LOWER_BOUND){
 				alpha = std::max(alpha, entry.best_value);
-				if(alpha >=beta) return alpha;
+				if( alpha >= beta ) return alpha;
 			} 
 			else if (entry.value_type == UPPER_BOUND){
 				beta = std::min(beta, entry.best_value);
-				if(alpha >=beta) return beta;
+				if( alpha >= beta ) return beta;
 			} 
 		}
 	}
@@ -235,7 +235,7 @@ float NegaScout::Search_G(Board* b, float alpha, float beta, int depth){
 	int result[100];
 	int move_count = traverse->get_legal_move(result);
 	if(depth==0 || move_count == 0 || b->is_game_over() || timer(false) >= time_limit){ // time limit
-		return evaluate(b, b->color);
+		return evaluate(b);
 	}
 
 	float val = 100; // m
@@ -257,7 +257,7 @@ float NegaScout::Search_G(Board* b, float alpha, float beta, int depth){
 		float score = Star1_G(traverse, val-1, val, depth-1); // negascout
 
 		if(score<val){
-			if( score<=alpha || depth<3){
+			if( score<=alpha ){
 				val = score;
 			}
 			else val = Star1_G(traverse, alpha, score, depth-1);
@@ -278,20 +278,42 @@ float NegaScout::Search_G(Board* b, float alpha, float beta, int depth){
 	return val;
 }
 
-float NegaScout::evaluate(Board* b, int color){
-	int target[2] = {0, 24};
-	float score = 0.0;
+float NegaScout::evaluate(Board* b){
+	int cube_piece[2] = {-1, -1};
+	Get_nearest(b, cube_piece);
 	float final_score = 0.0;
+
+	for(int i=0;i<num_strategy;i++){
+		final_score += strategy[i]->Evaluate_nearest(b, root->color, cube_piece) * weight[i];
+	}
+	final_score += bias;
+
+	return final_score;
+}
+
+void NegaScout::Get_nearest(Board* b, int* cube_piece){
+	int target[2] = {0, 24};
+	
+	int min_manhattan = 8;
 	for(int i=0;i<2;i++){
-		score = 0.0;
+		min_manhattan = 8;
 		for(int j=0;j<6;j++){
 			if(b->cube_position[i*6+j] == -1) continue;
 			int distance = abs(b->cube_position[i*6+j] - target[i]);
-			score = std::max( score, (float) (8.0 - (distance/5 + distance%5) ) );
+			int manhattan = distance/5 + distance%5;
+			if(manhattan < min_manhattan){
+				min_manhattan = manhattan;
+				cube_piece[i] = i*6+j;
+			}
 		}
-		final_score += i == root->color ? -score: score;
 	}
-	return final_score;
+}
+
+float NegaScout::truncate(float value, int num){
+	float temp = pow(10, num);
+	value = value * temp;
+	value = floor(value);
+	return value/temp;
 }
 
 // void NegaScout::Generate_move(char* move){
