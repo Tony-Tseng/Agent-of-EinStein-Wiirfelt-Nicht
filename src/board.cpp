@@ -93,11 +93,11 @@ void Board::Set_board(char* position)
 			i += 1;
 		}
 		// 1~6: blue pieces; 7~12: red pieces
-		// if (i < PIECE_NUM * 2)
-		// {
-		this->board[position[index + 1] - '1'][position[index] - 'A'] = i + 1;
-		this->cube_position[i] = (position[index + 1] - '1') * BOARD_SIZE + (position[index] - 'A');
-		// }
+		if (i < PIECE_NUM * 2)
+		{
+			this->board[position[index + 1] - '1'][position[index] - 'A'] = i + 1;
+			this->cube_position[i] = (position[index + 1] - '1') * BOARD_SIZE + (position[index] - 'A');
+		}
 	}
 	fprintf(stderr, "\nThe current board:\n");
 	this->Print_chessboard();

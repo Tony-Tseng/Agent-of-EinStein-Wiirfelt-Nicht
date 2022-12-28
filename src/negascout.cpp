@@ -279,13 +279,34 @@ float NegaScout::Search_G(Board* b, float alpha, float beta, int depth){
 }
 
 float NegaScout::evaluate(Board* b){
+	int cube_piece[2] = {-1, -1};
+	Get_nearest(b, cube_piece);
 	float final_score = 0.0;
 
 	for(int i=0;i<num_strategy;i++){
-		final_score += strategy[i]->Evaluate(b, root->color) * weight[i];
+		final_score += strategy[i]->Evaluate_nearest(b, root->color, cube_piece) * weight[i];
 	}
+	final_score += bias;
 
 	return final_score;
+}
+
+void NegaScout::Get_nearest(Board* b, int* cube_piece){
+	int target[2] = {0, 24};
+	
+	int min_manhattan = 8;
+	for(int i=0;i<2;i++){
+		min_manhattan = 8;
+		for(int j=0;j<6;j++){
+			if(b->cube_position[i*6+j] == -1) continue;
+			int distance = abs(b->cube_position[i*6+j] - target[i]);
+			int manhattan = distance/5 + distance%5;
+			if(manhattan < min_manhattan){
+				min_manhattan = manhattan;
+				cube_piece[i] = i*6+j;
+			}
+		}
+	}
 }
 
 float NegaScout::truncate(float value, int num){
