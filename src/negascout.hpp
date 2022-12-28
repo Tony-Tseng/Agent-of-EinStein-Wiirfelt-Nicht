@@ -13,10 +13,14 @@ public:
 	double time_limit = 10.0;
 	int depth_limit = 5;
 	float threshold = 2;
-	const int num_strategy = 2;
-	float weight[3] = {0.81488095, 0.18038665, 0.07416915, };
-	float bias = 0.02727044;
-	Strategy* strategy[3] = {new CubeStep(), new Prob(), new Manhattan()};
+	// const int num_strategy = 2;
+	// float weight[3] = {0.81488095, 0.18038665, 0.07416915, };
+	// float bias = 0.02727044;
+	// Strategy* strategy[3] = {new CubeStep(), new Prob(), new Manhattan()};
+	const int num_strategy = 1;
+	float weight[1] = {1};
+	float bias = 0;
+	Strategy* strategy[1] = {new Manhattan()};
 	float MINVALUE = 0.0;
 	float MAXVALUE = 0.0;
 	
