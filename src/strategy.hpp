@@ -46,3 +46,27 @@ public:
 		return std::make_pair(MINVALUE, MAXVALUE);
 	}
 };
+
+class Threat : public Strategy {
+private:
+	float MINVALUE = -6;
+	float MAXVALUE = 6;
+public:
+	~Threat() {}
+	float Evaluate_nearest(Board*, int, int*);
+	std::pair<float, float> GetBound(){
+		return std::make_pair(MINVALUE, MAXVALUE);
+	}
+};
+
+class Turn : public Strategy {
+private:
+	float MINVALUE = -0.5;
+	float MAXVALUE = 0.5;
+public:
+	~Turn() {}
+	float Evaluate_nearest(Board*, int, int*);
+	std::pair<float, float> GetBound(){
+		return std::make_pair(MINVALUE, MAXVALUE);
+	}
+};

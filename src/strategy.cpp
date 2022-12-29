@@ -63,3 +63,21 @@ float Prob::Evaluate_nearest(Board* b, int color, int* cube_piece) {
 	}
 	return final_score;
 }
+
+// Blue
+float Turn::Evaluate_nearest(Board* b, int color, int* cube_piece){
+	return -b->color+0.5;
+}
+
+// RED
+// float Turn::Evaluate_nearest(Board* b, int color, int* cube_piece){
+// 	return b->color-0.5;
+// }
+
+// float Turn::Evaluate_nearest(Board* b, int color, int* cube_piece){
+// 	return b->color == RED? b->color-0.5: -b->color+0.5;
+// }
+
+// float Turn::Evaluate_nearest(Board* b, int color, int* cube_piece){
+// 	return 1-color;
+// }

@@ -37,7 +37,7 @@ void NegaScout::Generate_move(char* move){
 	total_time = timer(false);
 
 	std::pair<int ,float> IDAS_tmp;
-	int current_depth = 4;
+	int current_depth = 5;
 	
 	while( timer(false) < time_limit && current_depth <= depth_limit){
 		IDAS_tmp = First_F(IDAS_result.second-threshold, IDAS_result.second+threshold, current_depth);
@@ -53,7 +53,7 @@ void NegaScout::Generate_move(char* move){
 
 		// std::cout << curr_time << " " << prev_time << " " << total_time << std::endl;
 		
-		// if(IDAS_tmp.second > IDAS_result.second){
+		// if(current_depth%2==1){
 		IDAS_result = IDAS_tmp;
 		// }
 		// Need to determine whether the time is enough
@@ -62,12 +62,12 @@ void NegaScout::Generate_move(char* move){
 
 		// std::cout << current_depth << " " << time_times * std::max(curr_time, 1.0) * 0.9 << " " << time_left << std::endl;
 		
-		if( time_times * std::max(curr_time, 1.0) * 0.9 > time_left ){
+		if( time_times * curr_time * 1.1 > time_left && current_depth > 5 ){
 			break;
 		}
 		prev_time = curr_time;
 		
-		current_depth+=2;
+		current_depth++;
 	}
 	
 	// Result index should iterate child to get the best move
