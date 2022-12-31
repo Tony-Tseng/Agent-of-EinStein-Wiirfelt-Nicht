@@ -11,6 +11,7 @@ class Table_Entry{
     bool occupied = false;
     int cube_position[2*PIECE_NUM];
     int color;
+    int dice;
     int depth;
     int value_type;
     float best_value;

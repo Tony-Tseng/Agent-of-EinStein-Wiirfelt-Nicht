@@ -11,6 +11,7 @@ class Table{
     Table_Entry* table;
     int hash_table[12][25];
     int hash_color[2];
+    int hash_dice[6];
     int max_entry;
     int max_hash;
     int SEED = 1111;
@@ -28,7 +29,7 @@ class Table{
     void Generate_hash_table();
     void Set_entry(Board* b, int _depth, float value, int value_type, int* move_list, int move_index);
     int Calculate_hash(Board* b);
-    int Calculate_hash_by_move(Board* b, int hash_value, int piece, int start_pos, int end_pos);
+    int Calculate_hash_by_move(Board* b, int next_dice, int hash_value, int piece, int start_pos, int end_pos);
     int Get_board_index(Board* b);
     bool Check_same_state(Board* b, int index);
 };

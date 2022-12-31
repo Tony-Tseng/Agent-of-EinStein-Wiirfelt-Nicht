@@ -11,20 +11,24 @@ class NegaScout
 public:
 	struct timespec tick, tock;
 	double time_limit = 10.0;
-	int depth_limit = 9;
+	int depth_limit = 5;
 	float threshold = 2;
 	// const int num_strategy = 3;
-	// float weight[3] = {1, 0.18, 0.5};
-	// float bias = 0.2;
-	// Strategy* strategy[3] = {new CubeStep(), new Prob(), new Turn()};
-	const int num_strategy = 1;
-	float weight[1] = {1};
-	float bias = 0;
-	Strategy* strategy[1] = {new Manhattan()};
+	// float weight[3] = {0.9, 0.17, 0.5};
+	// float bias = 0;
+	// Strategy* strategy[3] = {new CubeStep(), new Prob(), new Threat()};
+	// const int num_strategy = 1;
+	// float weight[1] = {1};
+	// float bias = 0;
+	// Strategy* strategy[1] = {new Manhattan()};
 	// const int num_strategy = 2;
 	// float weight[2] = {0.9, 0.17};
-	// float bias = 0;
+	// float bias = 0.2;
 	// Strategy* strategy[2] = {new CubeStep(), new Prob()};
+	const int num_strategy = 3;
+	float weight[3] = {0.9, 0.17, 0.3};
+	float bias = 0;
+	Strategy* strategy[3] = {new CubeStep(), new Prob(), new Piece()};
 
 	float MINVALUE = 0.0;
 	float MAXVALUE = 0.0;
@@ -56,8 +60,8 @@ public:
 	
 	float Star1_F(Board* b, float alpha, float beta, int depth);
 	float Star1_G(Board* b, float alpha, float beta, int depth);
-	float Search_F(Board* b, float alpha, float beta, int depth);
-	float Search_G(Board* b, float alpha, float beta, int depth);
+	float Search_F(Board* b, int next_dice, float alpha, float beta, int depth);
+	float Search_G(Board* b, int next_dice, float alpha, float beta, int depth);
 
 	// float evaluate(Board* b, int color);
 	float evaluate(Board* b);
