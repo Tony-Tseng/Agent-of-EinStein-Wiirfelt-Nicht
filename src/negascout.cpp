@@ -32,9 +32,9 @@ void NegaScout::Generate_move(char* move){
 	float alpha = -100;
 	float beta = 100;
 
-	std::pair<int ,float> IDAS_result = First_F(alpha, beta, 5);
-	// prev_time = timer(false);
-	// total_time = timer(false);
+	std::pair<int ,float> IDAS_result = First_F(alpha, beta, 3);
+	prev_time = timer(false);
+	total_time = timer(false);
 
 	std::pair<int ,float> IDAS_tmp;
 	int current_depth = 5;
@@ -60,7 +60,7 @@ void NegaScout::Generate_move(char* move){
 		double time_left = time_limit - total_time;
 		double time_times = curr_time / prev_time;
 
-		// std::cout << current_depth << " " << time_times * curr_time * 0.9 << " " << time_left << std::endl;
+		std::cout << current_depth << " " << time_times * curr_time * 0.9 << " " << time_left << std::endl;
 		
 		if( time_times * curr_time * 0.9 > time_left && current_depth > 5){
 			break;
@@ -111,8 +111,6 @@ float NegaScout::Star2_F(Board* b, float alpha, float beta, int depth){
 	float A = (alpha - MAXVALUE) * 6.0 + MAXVALUE;
 	float B = (beta  - MINVALUE) * 6.0 + MINVALUE;
 	float M = MAXVALUE;
-	// float m = MINVALUE;
-	// float v_sum = 0.0;
 	float tmp = 0.0;
 
 	Board* traverse = new Board();
@@ -122,7 +120,7 @@ float NegaScout::Star2_F(Board* b, float alpha, float beta, int depth){
 		traverse->dice = i+1;
 		int result[100];
 		int move_count = traverse->get_legal_move(result);
-		if(move_count == 0 || depth==0){
+		if(move_count == 0 || depth==0 || b->is_game_over()){
 			tmp = evaluate(traverse);
 		} 
 		else{
@@ -132,7 +130,7 @@ float NegaScout::Star2_F(Board* b, float alpha, float beta, int depth){
 
 		M = M + (tmp-MAXVALUE) / 6.0;
 		A = A + MAXVALUE -tmp;
-		B = B + MINVALUE -tmp;
+		// B = B + MINVALUE -tmp;
 
 		if( M <= alpha ) return truncate(M, 5);
 
@@ -167,6 +165,39 @@ float NegaScout::Star1_F(Board* b, float alpha, float beta, int depth){
 
 	return truncate(v_sum / 6.0, 5);
 }
+
+// float NegaScout::Star2_G(Board* b, float alpha, float beta, int depth){
+// 	float A = (alpha - MAXVALUE) * 6.0 + MAXVALUE;
+// 	float B = (beta  - MINVALUE) * 6.0 + MINVALUE;
+// 	float m = MINVALUE;
+// 	float tmp = 0.0;
+
+// 	Board* traverse = new Board();
+// 	*traverse = *b;
+
+// 	for(int i=0;i<6;i++){
+// 		traverse->dice = i+1;
+// 		int result[100];
+// 		int move_count = traverse->get_legal_move(result);
+// 		if(move_count == 0 || depth==0 || b->is_game_over()){
+// 			tmp = evaluate(traverse);
+// 		} 
+// 		else{
+// 			traverse->Make_move(result[0], result[1], result[2]);
+// 			tmp = Search_F(traverse, std::max(A, (float)MINVALUE), std::min(B, (float)MAXVALUE), depth);
+// 		}
+
+// 		m = m + (tmp-MINVALUE) / 6.0;
+// 		// A = A + MAXVALUE -tmp;
+// 		B = B + MINVALUE -tmp;
+
+// 		if( m >= beta ) return truncate(m, 5);
+
+// 		*traverse = *b;
+// 	}
+
+// 	return Star1_G(b, alpha, beta, depth);
+// }
 
 float NegaScout::Star1_G(Board* b, float alpha, float beta, int depth){
 	float A = (alpha - MAXVALUE) * 6.0 + MAXVALUE;
@@ -304,7 +335,7 @@ float NegaScout::Search_G(Board* b, float alpha, float beta, int depth){
 	traverse->Make_move(result[i*3], result[i*3+1], result[i*3+2]);
 	traverse->hash_value = next_hash;
 
-	val = std::min(val, Star1_G(traverse, alpha, beta, depth-1));
+	val = std::min(val, Star2_G(traverse, alpha, beta, depth-1));
 	*traverse = *b;
 	if(val<=alpha) return val;
 
@@ -313,13 +344,13 @@ float NegaScout::Search_G(Board* b, float alpha, float beta, int depth){
 		traverse->Make_move(result[i*3], result[i*3+1], result[i*3+2]);
 		traverse->hash_value = next_hash;
 
-		float score = Star1_G(traverse, val-1, val, depth-1); // negascout
+		float score = Star2_G(traverse, val-1, val, depth-1); // negascout
 
 		if(score<val){
 			if( score<=alpha || depth<1 ){
 				val = score;
 			}
-			else val = Star1_G(traverse, alpha, score, depth-1);
+			else val = Star2_G(traverse, alpha, score, depth-1);
 			best_index = i;
 		}
 		if(val<=alpha){
