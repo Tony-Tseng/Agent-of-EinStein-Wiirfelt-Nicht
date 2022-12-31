@@ -64,9 +64,45 @@ float Prob::Evaluate_nearest(Board* b, int color, int* cube_piece) {
 	return final_score;
 }
 
+float Corner::Evaluate_nearest(Board* b, int color, int* cube_piece){
+	float final_score = 0.0;
+
+	for(int i=0;i<6;i++){
+		if( b->cube_position[i] == 24 || b->cube_position[i] == 23 || b->cube_position[i] == 19 ){
+			final_score += 1;
+		}
+	}
+	for(int i=6;i<12;i++){
+		if( b->cube_position[i] == 0 || b->cube_position[i] == 1 || b->cube_position[i] == 5 ){
+			final_score -= 1;
+		}
+	}
+	return color == BLUE? final_score: -final_score; 
+}
+
+float Threat::Evaluate_nearest(Board* b, int color, int* cube_piece){
+	float final_score = 0.0;
+
+	for(int i=6;i<12;i++){
+		int position = b->cube_position[i];
+		if( position / 5 <= cube_piece[0] / 5 && position % 5 <= cube_piece[0] % 5 ){
+			final_score -= 1;
+		}
+	}
+
+	for(int i=0;i<6;i++){
+		int position = b->cube_position[i];
+		if( position / 5 >= cube_piece[1] / 5 && position % 5 >= cube_piece[1] % 5 ){
+			final_score += 1;
+		}
+	}
+
+	return color == BLUE? -final_score: final_score; 
+}
+
 // Blue
 float Turn::Evaluate_nearest(Board* b, int color, int* cube_piece){
-	return -b->color+0.5;
+	return color == RED? b->color: 1-b->color;
 }
 
 // RED
@@ -75,7 +111,7 @@ float Turn::Evaluate_nearest(Board* b, int color, int* cube_piece){
 // }
 
 // float Turn::Evaluate_nearest(Board* b, int color, int* cube_piece){
-// 	return b->color == RED? b->color-0.5: -b->color+0.5;
+// 	return b->color == color? -b->color-0.5: b->color+0.5;
 // }
 
 // float Turn::Evaluate_nearest(Board* b, int color, int* cube_piece){

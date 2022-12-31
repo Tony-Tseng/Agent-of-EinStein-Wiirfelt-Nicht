@@ -61,10 +61,22 @@ public:
 
 class Turn : public Strategy {
 private:
-	float MINVALUE = -0.5;
-	float MAXVALUE = 0.5;
+	float MINVALUE = 0;
+	float MAXVALUE = 1;
 public:
 	~Turn() {}
+	float Evaluate_nearest(Board*, int, int*);
+	std::pair<float, float> GetBound(){
+		return std::make_pair(MINVALUE, MAXVALUE);
+	}
+};
+
+class Corner : public Strategy {
+private:
+	float MINVALUE = -3;
+	float MAXVALUE = 3;
+public:
+	~Corner() {}
 	float Evaluate_nearest(Board*, int, int*);
 	std::pair<float, float> GetBound(){
 		return std::make_pair(MINVALUE, MAXVALUE);
