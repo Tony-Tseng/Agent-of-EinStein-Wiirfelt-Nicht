@@ -50,7 +50,7 @@ void NegaScout::Generate_move(char* move){
 	total_time = timer(false);
 
 	std::pair<int ,float> IDAS_tmp;
-	int current_depth = 5;
+	int current_depth = 4;
 	
 	while( timer(false) < time_limit && current_depth <= depth_limit){
 		IDAS_tmp = First_F(IDAS_result.second-threshold, IDAS_result.second+threshold, current_depth);
@@ -108,6 +108,11 @@ std::pair<int, float> NegaScout::First_F(float alpha, float beta, int depth){
 		next_hash = transposition_table->Calculate_hash_by_move(traverse, traverse->dice, traverse->hash_value, result[i*3], result[i*3+1], result[i*3+2]);
 		traverse->Make_move(result[i*3], result[i*3+1], result[i*3+2]);
 		traverse->hash_value = next_hash;
+
+		if(traverse->is_game_over()){
+			result_index = i;
+			break;
+		}
 
 		float score = Star1_F(traverse, std::max(alpha, val), beta, depth-1); // negascout
 
