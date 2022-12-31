@@ -20,6 +20,6 @@ void TimeControler::update_time(double interval){
 void TimeControler::update_step(){
     current_step += 1;
     if( current_step + 7 > step_estimation ){
-        step_estimation += 13;
+        step_estimation += 7;
     }
 }

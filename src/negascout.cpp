@@ -36,39 +36,39 @@ void NegaScout::Generate_move(char* move){
 	// prev_time = timer(false);
 	// total_time = timer(false);
 
-	// std::pair<int ,float> IDAS_tmp;
-	// int current_depth = 4;
+	std::pair<int ,float> IDAS_tmp;
+	int current_depth = 5;
 	
-	// while( timer(false) < time_limit && current_depth <= depth_limit){
-	// 	IDAS_tmp = First_F(IDAS_result.second-threshold, IDAS_result.second+threshold, current_depth);
-	// 	if(IDAS_tmp.second <= IDAS_result.second-threshold){
-	// 		IDAS_tmp = First_F(alpha, IDAS_tmp.second, current_depth);
-	// 	}
-	// 	else if(IDAS_tmp.second >= IDAS_result.second+threshold){
-	// 		IDAS_tmp = First_F(IDAS_tmp.second, beta, current_depth);
-	// 	}
+	while( timer(false) < time_limit && current_depth <= depth_limit){
+		IDAS_tmp = First_F(IDAS_result.second-threshold, IDAS_result.second+threshold, current_depth);
+		if(IDAS_tmp.second <= IDAS_result.second-threshold){
+			IDAS_tmp = First_F(alpha, IDAS_tmp.second, current_depth);
+		}
+		else if(IDAS_tmp.second >= IDAS_result.second+threshold){
+			IDAS_tmp = First_F(IDAS_tmp.second, beta, current_depth);
+		}
 
-	// 	curr_time = timer(false) - total_time;
-	// 	total_time = timer(false);
+		curr_time = timer(false) - total_time;
+		total_time = timer(false);
 
-	// 	// std::cout << curr_time << " " << prev_time << " " << total_time << std::endl;
+		// std::cout << curr_time << " " << prev_time << " " << total_time << std::endl;
 		
-	// 	// if(IDAS_tmp.second > IDAS_result.second){
-	// 	IDAS_result = IDAS_tmp;
-	// 	// }
-	// 	// Need to determine whether the time is enough
-	// 	double time_left = time_limit - total_time;
-	// 	double time_times = curr_time / prev_time;
+		// if(current_depth%2==1){
+		IDAS_result = IDAS_tmp;
+		// }
+		// Need to determine whether the time is enough
+		double time_left = time_limit - total_time;
+		double time_times = curr_time / prev_time;
 
-	// 	// std::cout << current_depth << " " << time_times * std::max(curr_time, 1.0) * 0.9 << " " << time_left << std::endl;
+		// std::cout << current_depth << " " << time_times * curr_time * 0.9 << " " << time_left << std::endl;
 		
-	// 	if( time_times * std::max(curr_time, 1.0) * 0.9 > time_left ){
-	// 		break;
-	// 	}
-	// 	prev_time = curr_time;
+		if( time_times * curr_time * 0.9 > time_left && current_depth > 5){
+			break;
+		}
+		prev_time = curr_time;
 		
-	// 	current_depth+=2;
-	// }
+		current_depth+=2;
+	}
 	
 	// Result index should iterate child to get the best move
 	int result_index = IDAS_result.first;
@@ -338,6 +338,11 @@ float NegaScout::Search_G(Board* b, float alpha, float beta, int depth){
 }
 
 float NegaScout::evaluate(Board* b){
+	// if(b->is_game_over()){
+	// 	if(b->red_piece_num == 0) return root->color == RED? MINVALUE: MAXVALUE;
+	// 	else if(b->blue_piece_num == 0) return root->color == BLUE? MINVALUE: MAXVALUE;
+	// }
+
 	int cube_piece[2] = {-1, -1};
 	Get_nearest(b, cube_piece);
 	float final_score = 0.0;
