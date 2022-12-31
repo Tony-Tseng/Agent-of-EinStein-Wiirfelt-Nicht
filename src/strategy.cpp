@@ -64,6 +64,23 @@ float Prob::Evaluate_nearest(Board* b, int color, int* cube_piece) {
 	return final_score;
 }
 
+// Blue
+float Piece::Evaluate_nearest(Board* b, int color, int* cube_piece){
+	float final_score = 0.0;
+
+	float p[6];
+	if( b->blue_piece_num <= 3 && b->blue_piece_num > 1){ // && b->red_piece_num - b->blue_piece_num < 2
+		b->cal_probability(p, 1);
+		if(p[0] + p[1] + p[2] + p[3] + p[4] + p[5] <= 6) final_score -= 1;
+	}
+
+	if( b->red_piece_num <= 3 && b->red_piece_num > 1){ // && b->blue_piece_num - b->red_piece_num < 2
+		b->cal_probability(p, 0);
+		if(p[0] + p[1] + p[2] + p[3] + p[4] + p[5] <= 6) final_score += 1;
+	}
+	return color == BLUE? final_score: -final_score;
+}
+
 float Corner::Evaluate_nearest(Board* b, int color, int* cube_piece){
 	float final_score = 0.0;
 
@@ -122,37 +139,7 @@ float Protection::Evaluate_nearest(Board* b, int color, int* cube_piece){
 	return color == BLUE? final_score: -final_score; 
 }
 
-// Blue
-float Piece::Evaluate_nearest(Board* b, int color, int* cube_piece){
-	float final_score = 0.0;
-
-	float p[6];
-	if( b->blue_piece_num <= 3 && b->blue_piece_num > 1){
-		b->cal_probability(p, 1);
-		if(p[0] + p[1] + p[2] + p[3] + p[4] + p[5] <= 6) final_score -= 1;
-	}
-
-	if( b->red_piece_num <= 3 && b->blue_piece_num > 1){
-		b->cal_probability(p, 0);
-		if(p[0] + p[1] + p[2] + p[3] + p[4] + p[5] <= 6) final_score += 1;
-	}
-	return color == BLUE? final_score: -final_score;
-}
-
-// Blue
-float Turn::Evaluate_nearest(Board* b, int color, int* cube_piece){
-	return color == RED? b->color: -(1-b->color);
-}
-
-// RED
+// // Blue
 // float Turn::Evaluate_nearest(Board* b, int color, int* cube_piece){
-// 	return b->color-0.5;
-// }
-
-// float Turn::Evaluate_nearest(Board* b, int color, int* cube_piece){
-// 	return b->color == color? -b->color-0.5: b->color+0.5;
-// }
-
-// float Turn::Evaluate_nearest(Board* b, int color, int* cube_piece){
-// 	return 1-color;
+// 	return color == RED? b->color: -(1-b->color);
 // }

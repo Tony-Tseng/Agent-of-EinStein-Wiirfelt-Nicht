@@ -11,23 +11,14 @@ class NegaScout
 public:
 	struct timespec tick, tock;
 	double time_limit = 10.0;
-	int depth_limit = 5;
+	int depth_limit = 7;
+	float hard_time_limit = 100.0;
 	float threshold = 2;
 	// const int num_strategy = 3;
-	// float weight[3] = {0.9, 0.17, 0.5};
-	// float bias = 0;
-	// Strategy* strategy[3] = {new CubeStep(), new Prob(), new Threat()};
-	// const int num_strategy = 1;
-	// float weight[1] = {1};
-	// float bias = 0;
-	// Strategy* strategy[1] = {new Manhattan()};
-	// const int num_strategy = 2;
-	// float weight[2] = {0.9, 0.17};
-	// float bias = 0.2;
-	// Strategy* strategy[2] = {new CubeStep(), new Prob()};
+	// float weight[3] = {0.9, 0.17, 0.3};
+	// Strategy* strategy[3] = {new CubeStep(), new Prob(), new Piece()};
 	const int num_strategy = 3;
-	float weight[3] = {0.9, 0.17, 0.3};
-	float bias = 0;
+	float weight[3] = {1, 0.17, 0.3};
 	Strategy* strategy[3] = {new CubeStep(), new Prob(), new Piece()};
 
 	float MINVALUE = 0.0;
@@ -35,23 +26,15 @@ public:
 	
 
 	NegaScout(Board *b){
-		*root = *b;
-		int hash_value = transposition_table->Calculate_hash(root);
-		root->hash_value = hash_value;
-
-		std::pair<float, float> bound;
-		for(int i=0;i<num_strategy;i++){
-			bound = strategy[i]->GetBound();
-			MINVALUE += bound.first * weight[i];
-			MAXVALUE += bound.second * weight[i];
-		}
-		MINVALUE += bias;
-		MAXVALUE += bias;
+		set_root(b);
+	};
+	NegaScout(){
 	};
 	~NegaScout(){
 	};
 	double timer(bool reset);
 
+	void set_root(Board* b);
 	void set_time_limit(double time_limit);
 	void Generate_random_move(char* move);
 	void Generate_move(char* move);
@@ -63,7 +46,6 @@ public:
 	float Search_F(Board* b, int next_dice, float alpha, float beta, int depth);
 	float Search_G(Board* b, int next_dice, float alpha, float beta, int depth);
 
-	// float evaluate(Board* b, int color);
 	float evaluate(Board* b);
 	void Get_nearest(Board* b, int* cube_piece);
 	float truncate(float value, int num);

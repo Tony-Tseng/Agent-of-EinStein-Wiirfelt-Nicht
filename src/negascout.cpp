@@ -13,6 +13,19 @@ void NegaScout::set_time_limit(double time_limit){
 	this->time_limit = time_limit;
 }
 
+void NegaScout::set_root(Board* b){
+	*root = *b;
+	int hash_value = transposition_table->Calculate_hash(root);
+	root->hash_value = hash_value;
+
+	std::pair<float, float> bound;
+	for(int i=0;i<num_strategy;i++){
+		bound = strategy[i]->GetBound();
+		MINVALUE += bound.first * weight[i];
+		MAXVALUE += bound.second * weight[i];
+	}
+}
+
 void NegaScout::Generate_random_move(char* move){
 	int result[100];
 	// get legal moves
@@ -51,17 +64,17 @@ void NegaScout::Generate_move(char* move){
 		curr_time = timer(false) - total_time;
 		total_time = timer(false);
 		
-		// if(current_depth%2==1){
-		IDAS_result = IDAS_tmp;
-		// }
+		if( timer(false) < hard_time_limit || IDAS_tmp.second > IDAS_result.second + threshold){
+			IDAS_result = IDAS_tmp;
+		}
 		// Need to determine whether the time is enough
 		double time_left = time_limit - total_time;
 		double time_times = curr_time / prev_time;
 
 		// std::cout << curr_time << " " << prev_time << " " << total_time << std::endl;
-		// std::cout << current_depth << " " << time_times * curr_time * 0.7 << " " << time_left << std::endl;
+		// std::cout << current_depth << " " << time_times * curr_time * 1.5 << " " << time_left << std::endl;
 		
-		if( (time_times * curr_time * 0.8 > time_left )){
+		if( time_times * curr_time * 1.5 > time_left || time_left < 10){
 			break;
 		}
 		prev_time = curr_time;
@@ -191,7 +204,7 @@ float NegaScout::Search_F(Board* b, int next_dice, float alpha, float beta, int 
 	traverse->dice = next_dice;
 	int move_count = traverse->get_legal_move(result);
 	*traverse = *b;
-	if(depth==0 || move_count == 0 || b->is_game_over() ){
+	if(depth==0 || move_count == 0 || b->is_game_over() || timer(false) > hard_time_limit ){
 		return evaluate(b);
 	}
 
@@ -265,7 +278,7 @@ float NegaScout::Search_G(Board* b, int next_dice, float alpha, float beta, int 
 	traverse->dice = next_dice;
 	int move_count = traverse->get_legal_move(result);
 	*traverse = *b;
-	if(depth==0 || move_count == 0 || b->is_game_over() ){ // time limit
+	if(depth==0 || move_count == 0 || b->is_game_over() || timer(false) > hard_time_limit){ // time limit
 		return evaluate(b);
 	}
 
@@ -310,10 +323,10 @@ float NegaScout::Search_G(Board* b, int next_dice, float alpha, float beta, int 
 }
 
 float NegaScout::evaluate(Board* b){
-	// if(b->is_game_over()){
-	// 	if(b->red_piece_num == 0) return root->color == RED? MINVALUE: MAXVALUE;
-	// 	else if(b->blue_piece_num == 0) return root->color == BLUE? MINVALUE: MAXVALUE;
-	// }
+	if(b->is_game_over()){
+		if(b->red_piece_num == 0) return root->color == RED? MINVALUE: MAXVALUE;
+		else if(b->blue_piece_num == 0) return root->color == BLUE? MINVALUE: MAXVALUE;
+	}
 
 	int cube_piece[2] = {-1, -1};
 	Get_nearest(b, cube_piece);
@@ -322,7 +335,6 @@ float NegaScout::evaluate(Board* b){
 	for(int i=0;i<num_strategy;i++){
 		final_score += strategy[i]->Evaluate_nearest(b, root->color, cube_piece) * weight[i];
 	}
-	final_score += bias;
 
 	return final_score;
 }
