@@ -14,12 +14,18 @@ public:
 	int depth_limit = 7;
 	float hard_time_limit = 100.0;
 	float threshold = 2;
+	const int num_strategy = 2;
+	float weight[2] = {1, 0.17};
+	Strategy* strategy[2] = {new CubeStep(), new Prob()};
 	// const int num_strategy = 3;
-	// float weight[3] = {0.9, 0.17, 0.3};
+	// float weight[3] = {1, 0.17, 0.3};
 	// Strategy* strategy[3] = {new CubeStep(), new Prob(), new Piece()};
-	const int num_strategy = 3;
-	float weight[3] = {1, 0.17, 0.3};
-	Strategy* strategy[3] = {new CubeStep(), new Prob(), new Piece()};
+	// const int num_strategy = 3;
+	// float weight[3] = {1, 0.17, 0.5};
+	// Strategy* strategy[3] = {new CubeStep(), new Prob(), new Turn()};
+	// const int num_strategy = 1;
+	// float weight[1] = {1};
+	// Strategy* strategy[1] = {new Manhattan()};
 
 	float MINVALUE = 0.0;
 	float MAXVALUE = 0.0;

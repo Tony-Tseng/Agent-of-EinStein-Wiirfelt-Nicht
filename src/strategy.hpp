@@ -1,11 +1,12 @@
 #pragma once
 
 #include "board.hpp"
+#include <iostream>
 
 class Strategy {
 public:
 	virtual ~Strategy()=default;
-	virtual float Evaluate_nearest(Board*, int, int*) = 0;
+	virtual float Evaluate_nearest(Board*, int, int [2]) = 0;
 	virtual std::pair<float, float> GetBound() = 0;
 };
 
@@ -16,7 +17,7 @@ private:
 
 public:
 	~Manhattan() {}
-	float Evaluate_nearest(Board*, int, int*);
+	float Evaluate_nearest(Board*, int, int [2]);
 	std::pair<float, float> GetBound(){
 		return std::make_pair(MINVALUE, MAXVALUE);
 	}
@@ -29,7 +30,7 @@ private:
 	
 public:
 	~CubeStep() {}
-	float Evaluate_nearest(Board*, int, int*);
+	float Evaluate_nearest(Board*, int, int [2]);
 	std::pair<float, float> GetBound(){
 		return std::make_pair(MINVALUE, MAXVALUE);
 	}
@@ -41,7 +42,7 @@ private:
 	float MAXVALUE = 6;
 public:
 	~Prob() {}
-	float Evaluate_nearest(Board*, int, int*);
+	float Evaluate_nearest(Board*, int, int [2]);
 	std::pair<float, float> GetBound(){
 		return std::make_pair(MINVALUE, MAXVALUE);
 	}
@@ -53,7 +54,7 @@ private:
 	float MAXVALUE = 6;
 public:
 	~Threat() {}
-	float Evaluate_nearest(Board*, int, int*);
+	float Evaluate_nearest(Board*, int, int [2]);
 	std::pair<float, float> GetBound(){
 		return std::make_pair(MINVALUE, MAXVALUE);
 	}
@@ -65,7 +66,7 @@ private:
 	float MAXVALUE = 1;
 public:
 	~Piece() {}
-	float Evaluate_nearest(Board*, int, int*);
+	float Evaluate_nearest(Board*, int, int [2]);
 	std::pair<float, float> GetBound(){
 		return std::make_pair(MINVALUE, MAXVALUE);
 	}
@@ -77,7 +78,7 @@ private:
 	float MAXVALUE = 3;
 public:
 	~Corner() {}
-	float Evaluate_nearest(Board*, int, int*);
+	float Evaluate_nearest(Board*, int, int [2]);
 	std::pair<float, float> GetBound(){
 		return std::make_pair(MINVALUE, MAXVALUE);
 	}
@@ -89,9 +90,20 @@ private:
 	float MAXVALUE = 3;
 public:
 	~Protection() {}
-	float Evaluate_nearest(Board*, int, int*);
+	float Evaluate_nearest(Board*, int, int [2]);
 	std::pair<float, float> GetBound(){
 		return std::make_pair(MINVALUE, MAXVALUE);
 	}
 };
 
+class Turn : public Strategy {
+private:
+	float MINVALUE = -1;
+	float MAXVALUE = 1;
+public:
+	~Turn() {}
+	float Evaluate_nearest(Board*, int, int [2]);
+	std::pair<float, float> GetBound(){
+		return std::make_pair(MINVALUE, MAXVALUE);
+	}
+};
