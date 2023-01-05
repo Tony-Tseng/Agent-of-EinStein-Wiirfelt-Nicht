@@ -11,7 +11,7 @@ class NegaScout
 public:
 	struct timespec tick, tock;
 	double time_limit = 10.0;
-	int depth_limit = 7;
+	int depth_limit = 5;
 	float hard_time_limit = 100.0;
 	float threshold = 2;
 	const int num_strategy = 2;

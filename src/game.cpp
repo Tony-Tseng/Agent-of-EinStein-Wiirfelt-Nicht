@@ -14,8 +14,10 @@ void Game::Version(const char* data[], char* response)
 
 void Game::Time_setting(const char* data[], char* response)
 {
-	state->red_time = stoi(data[1]);
-	state->blue_time = stoi(data[1]);
+	// state->red_time = stoi(data[1]);
+	// state->blue_time = stoi(data[1]);
+	state->red_time = 240;
+	state->blue_time = 240;
 	strcpy(response, "1");
 }
 
