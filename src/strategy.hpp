@@ -6,7 +6,7 @@
 class Strategy {
 public:
 	virtual ~Strategy()=default;
-	virtual float Evaluate_nearest(Board*, int, int [2]) = 0;
+	virtual float Evaluate_nearest(Board*, int, int*) = 0;
 	virtual std::pair<float, float> GetBound() = 0;
 };
 
@@ -17,7 +17,7 @@ private:
 
 public:
 	~Manhattan() {}
-	float Evaluate_nearest(Board*, int, int [2]);
+	float Evaluate_nearest(Board*, int, int*);
 	std::pair<float, float> GetBound(){
 		return std::make_pair(MINVALUE, MAXVALUE);
 	}
@@ -30,7 +30,7 @@ private:
 	
 public:
 	~CubeStep() {}
-	float Evaluate_nearest(Board*, int, int [2]);
+	float Evaluate_nearest(Board*, int, int*);
 	std::pair<float, float> GetBound(){
 		return std::make_pair(MINVALUE, MAXVALUE);
 	}
@@ -42,7 +42,7 @@ private:
 	float MAXVALUE = 6;
 public:
 	~Prob() {}
-	float Evaluate_nearest(Board*, int, int [2]);
+	float Evaluate_nearest(Board*, int, int*);
 	std::pair<float, float> GetBound(){
 		return std::make_pair(MINVALUE, MAXVALUE);
 	}
@@ -50,11 +50,11 @@ public:
 
 class Threat : public Strategy {
 private:
-	float MINVALUE = -6;
-	float MAXVALUE = 6;
+	float MINVALUE = -3;
+	float MAXVALUE = 3;
 public:
 	~Threat() {}
-	float Evaluate_nearest(Board*, int, int [2]);
+	float Evaluate_nearest(Board*, int, int*);
 	std::pair<float, float> GetBound(){
 		return std::make_pair(MINVALUE, MAXVALUE);
 	}
@@ -62,11 +62,11 @@ public:
 
 class Piece : public Strategy {
 private:
-	float MINVALUE = -1;
-	float MAXVALUE = 1;
+	float MINVALUE = -2;
+	float MAXVALUE = 2;
 public:
 	~Piece() {}
-	float Evaluate_nearest(Board*, int, int [2]);
+	float Evaluate_nearest(Board*, int, int*);
 	std::pair<float, float> GetBound(){
 		return std::make_pair(MINVALUE, MAXVALUE);
 	}
