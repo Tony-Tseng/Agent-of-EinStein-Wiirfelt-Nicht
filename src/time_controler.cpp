@@ -10,6 +10,7 @@ double TimeControler::timer(bool reset){
 }
 
 double TimeControler::available_search_time(){
+    if(current_step < 2 ) return 5;
     return (time_limit - current_time)/ (step_estimation - current_step + 1);
 }
 
@@ -19,7 +20,7 @@ void TimeControler::update_time(double interval){
 
 void TimeControler::update_step(){
     current_step += 1;
-    if( current_step + 7 > step_estimation ){
-        step_estimation += 13;
+    if( current_step + 3 > step_estimation ){
+        step_estimation += 5;
     }
 }

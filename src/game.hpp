@@ -7,6 +7,7 @@
 #include <time.h>
 #include <string>
 #include "board.hpp"
+#include "negascout.hpp"
 #include "time_controler.hpp"
 
 using std::stoi;
@@ -29,10 +30,12 @@ public:
 	Game(){
 		state = new Board();
 		time_controler = new TimeControler();
+		AI = new NegaScout();
 	};
 	~Game(){
 		delete state;
 		delete time_controler;
+		delete AI;
 	};
 
 	// commands
@@ -47,4 +50,5 @@ public:
 private:
 	Board* state;
 	TimeControler* time_controler;
+	NegaScout* AI;
 };

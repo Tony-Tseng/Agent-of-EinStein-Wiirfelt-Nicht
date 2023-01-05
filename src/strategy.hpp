@@ -1,6 +1,7 @@
 #pragma once
 
 #include "board.hpp"
+#include <iostream>
 
 class Strategy {
 public:
@@ -42,6 +43,66 @@ private:
 public:
 	~Prob() {}
 	float Evaluate_nearest(Board*, int, int*);
+	std::pair<float, float> GetBound(){
+		return std::make_pair(MINVALUE, MAXVALUE);
+	}
+};
+
+class Threat : public Strategy {
+private:
+	float MINVALUE = -3;
+	float MAXVALUE = 3;
+public:
+	~Threat() {}
+	float Evaluate_nearest(Board*, int, int*);
+	std::pair<float, float> GetBound(){
+		return std::make_pair(MINVALUE, MAXVALUE);
+	}
+};
+
+class Piece : public Strategy {
+private:
+	float MINVALUE = -2;
+	float MAXVALUE = 2;
+public:
+	~Piece() {}
+	float Evaluate_nearest(Board*, int, int*);
+	std::pair<float, float> GetBound(){
+		return std::make_pair(MINVALUE, MAXVALUE);
+	}
+};
+
+class Corner : public Strategy {
+private:
+	float MINVALUE = -3;
+	float MAXVALUE = 3;
+public:
+	~Corner() {}
+	float Evaluate_nearest(Board*, int, int [2]);
+	std::pair<float, float> GetBound(){
+		return std::make_pair(MINVALUE, MAXVALUE);
+	}
+};
+
+class Protection : public Strategy {
+private:
+	float MINVALUE = -3;
+	float MAXVALUE = 3;
+public:
+	~Protection() {}
+	float Evaluate_nearest(Board*, int, int [2]);
+	std::pair<float, float> GetBound(){
+		return std::make_pair(MINVALUE, MAXVALUE);
+	}
+};
+
+class Turn : public Strategy {
+private:
+	float MINVALUE = -1;
+	float MAXVALUE = 1;
+public:
+	~Turn() {}
+	float Evaluate_nearest(Board*, int, int [2]);
 	std::pair<float, float> GetBound(){
 		return std::make_pair(MINVALUE, MAXVALUE);
 	}

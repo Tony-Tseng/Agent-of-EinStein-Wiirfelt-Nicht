@@ -7,6 +7,7 @@ void Table_Entry::set_table(Board* b, int depth, float value, int value_type, in
     for(int i=0;i<2*PIECE_NUM;i++){
         cube_position[i] = b->cube_position[i];
     }
+    this->dice = b->dice;
     color = b->color;
     this->depth = depth;
     best_value = value;

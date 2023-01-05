@@ -14,8 +14,10 @@ void Game::Version(const char* data[], char* response)
 
 void Game::Time_setting(const char* data[], char* response)
 {
-	state->red_time = stoi(data[1]);
-	state->blue_time = stoi(data[1]);
+	// state->red_time = stoi(data[1]);
+	// state->blue_time = stoi(data[1]);
+	state->red_time = 240;
+	state->blue_time = 240;
 	strcpy(response, "1");
 }
 
@@ -71,14 +73,15 @@ void Game::Get(const char* data[], char* response)
 
 	// generate move
 	char move[4];
-	NegaScout* AI = new NegaScout(state);
+	// NegaScout* AI = new NegaScout(state);
+	AI->set_root(state);
+	AI->hard_time_limit = (time_controler->time_limit-time_controler->current_time)/2;
 	AI->set_time_limit(time_controler->available_search_time());
 	// std::cout << time_controler->available_search_time() << std::endl;
 	// AI->Generate_random_move(move);
 	AI->timer(true);
 	AI->Generate_move(move);
 	sprintf(response, "%c%c %c%c", move[0], move[1], move[2], move[3]);
-	delete AI;
 
 	double spend_time = time_controler->timer(false);
 	time_controler->update_time(spend_time);
